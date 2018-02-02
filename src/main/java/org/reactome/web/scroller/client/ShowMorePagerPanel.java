@@ -52,10 +52,6 @@ public class ShowMorePagerPanel extends AbstractPager {
      */
     private int lastScrollPos = 0;
 
-    private int startIndex = 0;
-    private int endIndex = 0;
-    private int visibleWindow = 40;
-
     /**
      * The scrollable panel.
      */
@@ -104,22 +100,18 @@ public class ShowMorePagerPanel extends AbstractPager {
                 return;
             }
 
+            int curStartIndex = getDisplay().getVisibleRange().getStart();
+            int curEndIndex = curStartIndex + getDisplay().getVisibleRange().getLength() - 1;
+            _log(" Rows: " + getDisplay().getRowCount() + " [startIndex= " + curStartIndex + " endIndex= " + curEndIndex + "] visible: " + ((curEndIndex + 1) - curStartIndex));
             int start, length;
 
             if (oldScrollPos > lastScrollPos) {
 
-                if (lastScrollPos <= display.getVisibleRange().getStart() * 45) {
-                    _log("       > > Now: ");
-                    _log(" startIndex = " + display.getVisibleRange().getStart());
-                    _log(" endIndex = " + (getDisplay().getVisibleRange().getStart() + (getDisplay().getVisibleRange().getLength() - 1)) );
+                if (lastScrollPos <= curStartIndex * 45) {
 
-                    start = Math.max(display.getVisibleRange().getStart() - 15, 0);
+                    start = Math.max(curStartIndex - 15, 0);
                     length = Math.min(25, display.getRowCount());
 
-                    _log("       > > Start: " + start );
-                    _log("       > > length: " + length );
-                    _log("       > > Rows: " + (getDisplay().getRowCount()) );
-//
                     display.setVisibleRange( start, length);
                     offsetStartPanel.setHeight(start * 45 + "px");
                     offsetEndPanel.setHeight((display.getRowCount() - (start + length))  * 45 + "px");
@@ -127,8 +119,6 @@ public class ShowMorePagerPanel extends AbstractPager {
                     scrollable.setVerticalScrollPosition(lastScrollPos + 1);
 
                 }
-                // Update start and end indexes
-                updateStartEndIndexes();
                 return;
             }
 
@@ -136,52 +126,29 @@ public class ShowMorePagerPanel extends AbstractPager {
 //            int maxScrollTop = scrollable.getWidget().getOffsetHeight() - scrollable.getOffsetHeight();
 
 
-            if (lastScrollPos >= (((endIndex) * 45) - scrollable.getOffsetHeight())) { //Needs Updating using the endIndex
-//                _log(" ====== down = ");
+            if (lastScrollPos >= (((curEndIndex) * 45) - scrollable.getOffsetHeight())) { //Needs Updating using the endIndex
 
-
-                if (endIndex >= display.getRowCount() - 1) {
+                if (curEndIndex >= display.getRowCount() - 1) {
                     // Requires expanding the rows with new data if available
-                    _log(" Requesting new data... ");
+//                    _log(" Requesting new data... ");
                     for (int i = 0; i < DEFAULT_INCREMENT; i++) {
                         dataProvider.getList().add(new ContactInfo("Title #" + (ContactInfo.nextId + 1), "Message #" + (ContactInfo.nextId + 1)));
                     }
                     dataProvider.flush();
-
                     start = Math.max(display.getRowCount() - 30, 0);
                     length = Math.min(30, display.getRowCount());
-
-                    display.setVisibleRange( start, length);
-                    offsetStartPanel.setHeight(start  * 45 + "px");
-                    offsetEndPanel.setHeight((display.getRowCount() - (start + length))  * 45 + "px");
                 } else {
-
-                    start = endIndex - 10;
-                    length = Math.min(20, 10 + display.getRowCount() - endIndex);
+                    start = curEndIndex - 10;
+                    length = Math.min(30, 10 + display.getRowCount() - curEndIndex);
                 }
 
                 display.setVisibleRange( start, length);
                 offsetStartPanel.setHeight(start  * 45 + "px");
                 offsetEndPanel.setHeight((display.getRowCount() - (start + length))  * 45 + "px");
 
-                if(selectionModel.getSelectedObject() != null) {
-                    selectedItem = selectionModel.getSelectedObject();
-                    selectionModel.clear();
-                }
-
                 scrollable.setVerticalScrollPosition(lastScrollPos);
-
-                // Update start and end indexes
-                updateStartEndIndexes();
-
             }
         });
-    }
-
-    private void updateStartEndIndexes() {
-        startIndex = getDisplay().getVisibleRange().getStart();
-        endIndex = startIndex + getDisplay().getVisibleRange().getLength() - 1;
-        _log(" Rows: " + getDisplay().getRowCount() + " [startIndex= " + startIndex + " endIndex= " + endIndex + "] visible: " + ((endIndex + 1) - startIndex));
     }
 
     /**
@@ -211,7 +178,6 @@ public class ShowMorePagerPanel extends AbstractPager {
 
     public void setDataProvider(ListDataProvider dataProvider) {
         this.dataProvider = dataProvider;
-        updateStartEndIndexes();
     }
 
     /**
