@@ -28,7 +28,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.HasRows;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SingleSelectionModel;
-import org.reactome.web.scroller.test.WidgetTest;
+
 
 
 /**
@@ -61,7 +61,7 @@ public class ShowMorePagerPanel extends AbstractPager {
      */
     private final ScrollPanel scrollable = new ScrollPanel();
 
-    private ListDataProvider<WidgetTest.ContactInfo> dataProvider;
+    private ListDataProvider<ContactInfo> dataProvider;
 
     private SimplePanel offsetStartPanel;
     private SimplePanel offsetEndPanel;
@@ -71,7 +71,7 @@ public class ShowMorePagerPanel extends AbstractPager {
     private Object selectedItem = null;
 
     // Add a selection model so we can select cells.
-    final SingleSelectionModel<WidgetTest.ContactInfo> selectionModel = new SingleSelectionModel<WidgetTest.ContactInfo>(WidgetTest.ContactInfo.KEY_PROVIDER);
+    final SingleSelectionModel<ContactInfo> selectionModel = new SingleSelectionModel<ContactInfo>(ContactInfo.KEY_PROVIDER);
 
     /**
      * Construct a new {@link ShowMorePagerPanel}.
@@ -91,91 +91,8 @@ public class ShowMorePagerPanel extends AbstractPager {
         rootPanel.add(offsetStartPanel);
         rootPanel.add(offsetEndPanel);
 
-
         // Do not let the scrollable take tab focus.
         scrollable.getElement().setTabIndex(-1);
-
-//        // Handle scroll events.
-//        scrollable.addScrollHandler(event -> {
-//            // If scrolling up, ignore the event.
-//            int oldScrollPos = lastScrollPos;
-//            lastScrollPos = scrollable.getVerticalScrollPosition();
-//            _log(" oldScroll = " + oldScrollPos);
-//            _log(" current = " + lastScrollPos);
-//
-//            HasRows display = getDisplay();
-//            if (display == null) {
-//                return;
-//            }
-//
-//            if (oldScrollPos >= lastScrollPos) {
-//                _log(" display.getVisibleRange().getStart() = " + display.getVisibleRange().getStart());
-//                _log(" display.getVisibleRange().getLength() = " + display.getVisibleRange().getLength());
-//
-//                if (lastScrollPos <= display.getVisibleRange().getStart() * 45 + 10) {
-////                    _log(" Now! " + lastScrollPos);
-//                    startIndex = Math.max(display.getVisibleRange().getStart() - 15, 0);
-//                    endIndex = Math.min(display.getVisibleRange().getStart() + 20, display.getRowCount());
-//                    display.setVisibleRange( startIndex, endIndex);
-//                    offsetStartPanel.setHeight(startIndex * 45 + "px");
-//
-//                    scrollable.setVerticalScrollPosition(lastScrollPos);
-//
-//                    _log(" startIndex " + startIndex);
-//                    _log(" endIndex " + endIndex);
-//                }
-//
-//
-//                return;
-//            }
-//
-//
-//            int maxScrollTop = scrollable.getWidget().getOffsetHeight() - scrollable.getOffsetHeight();
-//
-//            _log(" maxScrollTop = " + maxScrollTop);
-//            _log(" scrollable.getWidget().getOffsetHeight() = " + scrollable.getWidget().getOffsetHeight());
-//            _log(" scrollable.getOffsetHeight() = " + scrollable.getOffsetHeight());
-//            _log(" display.getRowCount() = " + display.getRowCount());
-//            _log(" scrollable.getMaximumVerticalScrollPosition() = " + scrollable.getMaximumVerticalScrollPosition());
-//            int frames = display.getRowCount()/DEFAULT_INCREMENT;
-//            _log(" Frames = " + frames);
-//
-////            _log(" display.getVisibleRange().getStart() = " + display.getVisibleRange().getStart());
-////            _log(" display.getVisibleRange().getLength() = " + display.getVisibleRange().getLength());
-//            _log("========");
-//            if (lastScrollPos >= scrollable.getMaximumVerticalScrollPosition()) {
-//
-//                if (endIndex < display.getRowCount()) {
-//
-//                }
-//
-//                // We are near the end, so increase the page size.
-////                    int newPageSize = Math.min(
-////                            display.getVisibleRange().getLength() + incrementSize,
-////                            display.getRowCount());
-////                    display.setVisibleRange(0, newPageSize);
-//                for (int i = 0; i <DEFAULT_INCREMENT; i++) {
-//                    dataProvider.getList().add(new WidgetTest.ContactInfo("Title #" + (WidgetTest.ContactInfo.nextId + 1), "Message #" + (WidgetTest.ContactInfo.nextId + 1)));
-//                }
-//
-//                dataProvider.flush();
-//
-//
-//                startIndex = Math.max(display.getRowCount() - 35, 0);
-//                _log(" startIndex = " + startIndex);
-//
-//                if(selectionModel.getSelectedObject() != null) {
-//                    selectedItem = selectionModel.getSelectedObject();
-//                    selectionModel.clear();
-//                }
-//
-//                display.setVisibleRange( startIndex, display.getRowCount());
-//                offsetStartPanel.setHeight(startIndex * 45 + "px");
-//
-//                scrollable.setVerticalScrollPosition(lastScrollPos);
-//
-//            }
-//        });
 
         // Handle scroll events.
         scrollable.addScrollHandler(event -> {
@@ -187,8 +104,7 @@ public class ShowMorePagerPanel extends AbstractPager {
                 return;
             }
 
-//            _log(" current = " + lastScrollPos + " oldScroll = " + oldScrollPos);
-//            _log(" start = " + display.getVisibleRange().getStart() + " lastIndex = " + (display.getVisibleRange().getLength() - 1));
+            int start, length;
 
             if (oldScrollPos > lastScrollPos) {
 
@@ -197,13 +113,8 @@ public class ShowMorePagerPanel extends AbstractPager {
                     _log(" startIndex = " + display.getVisibleRange().getStart());
                     _log(" endIndex = " + (getDisplay().getVisibleRange().getStart() + (getDisplay().getVisibleRange().getLength() - 1)) );
 
-
-
-//                    startIndex = Math.max(display.getVisibleRange().getStart() - 15, 0);
-//                    endIndex = Math.min(display.getVisibleRange().getStart() + 20, display.getRowCount());
-
-                    int start = Math.max(display.getVisibleRange().getStart() - 15, 0);
-                    int length = Math.min(25, display.getRowCount());
+                    start = Math.max(display.getVisibleRange().getStart() - 15, 0);
+                    length = Math.min(25, display.getRowCount());
 
                     _log("       > > Start: " + start );
                     _log("       > > length: " + length );
@@ -214,104 +125,53 @@ public class ShowMorePagerPanel extends AbstractPager {
                     offsetEndPanel.setHeight((display.getRowCount() - (start + length))  * 45 + "px");
 
                     scrollable.setVerticalScrollPosition(lastScrollPos + 1);
-//
-//                    _log("       > > Start: " + getDisplay().getVisibleRange().getStart() );
-//                    _log("       > > End: " + (getDisplay().getVisibleRange().getStart() + (getDisplay().getVisibleRange().getLength() - 1)) );
-//                    _log("       > > Rows: " + (getDisplay().getRowCount()) );
-//
-//                    // Update start and end indexes
 
                 }
+                // Update start and end indexes
                 updateStartEndIndexes();
                 return;
-
             }
 
 
 //            int maxScrollTop = scrollable.getWidget().getOffsetHeight() - scrollable.getOffsetHeight();
 
-//            _log(" maxScrollTop = " + maxScrollTop);
-//            _log(" scrollable.getWidget().getOffsetHeight() = " + scrollable.getWidget().getOffsetHeight());
-//            _log(" scrollable.getOffsetHeight() = " + scrollable.getOffsetHeight());
-//            _log(" display.getRowCount() = " + display.getRowCount());
-//            _log(" scrollable.getMaximumVerticalScrollPosition() = " + scrollable.getMaximumVerticalScrollPosition());
-//            int frames = display.getRowCount()/DEFAULT_INCREMENT;
-//            _log(" Frames = " + frames);
-
-//            _log(" display.getVisibleRange().getStart() = " + display.getVisibleRange().getStart());
-//            _log(" display.getVisibleRange().getLength() = " + display.getVisibleRange().getLength());
-//            _log("========");
-
-//            if (lastScrollPos >= (((endIndex) * 45) - scrollable.getOffsetHeight()) ){
-//                _log(" ====== lalalalalala = ");
-//                offsetEndPanel.setHeight(0 + "px");
-//            }
 
             if (lastScrollPos >= (((endIndex) * 45) - scrollable.getOffsetHeight())) { //Needs Updating using the endIndex
 //                _log(" ====== down = ");
 
+
                 if (endIndex >= display.getRowCount() - 1) {
-                    _log(" Requesting new data... ");
                     // Requires expanding the rows with new data if available
+                    _log(" Requesting new data... ");
                     for (int i = 0; i < DEFAULT_INCREMENT; i++) {
-                        dataProvider.getList().add(new WidgetTest.ContactInfo("Title #" + (WidgetTest.ContactInfo.nextId + 1), "Message #" + (WidgetTest.ContactInfo.nextId + 1)));
+                        dataProvider.getList().add(new ContactInfo("Title #" + (ContactInfo.nextId + 1), "Message #" + (ContactInfo.nextId + 1)));
                     }
                     dataProvider.flush();
 
-                    int start = Math.max(display.getRowCount() - 30, 0);
-                    int length = Math.min(30, display.getRowCount());
+                    start = Math.max(display.getRowCount() - 30, 0);
+                    length = Math.min(30, display.getRowCount());
 
                     display.setVisibleRange( start, length);
                     offsetStartPanel.setHeight(start  * 45 + "px");
                     offsetEndPanel.setHeight((display.getRowCount() - (start + length))  * 45 + "px");
                 } else {
 
-                    int start = endIndex - 10;
-//                    _log("       > > left: " + (display.getRowCount() - endIndex) );
-
-                    int length = Math.min(20, 10 + display.getRowCount() - endIndex);
-
-                    offsetStartPanel.setHeight(start  * 45 + "px");
-                    offsetEndPanel.setHeight((display.getRowCount() - (start + length))  * 45 + "px");
-                    display.setVisibleRange( start, length);
+                    start = endIndex - 10;
+                    length = Math.min(20, 10 + display.getRowCount() - endIndex);
                 }
 
-
-                //Simply move the window down
-
-//                _log("       > > Start: " + getDisplay().getVisibleRange().getStart() );
-//                _log("       > > End: " + (getDisplay().getVisibleRange().getStart() + (getDisplay().getVisibleRange().getLength() - 1)) );
-//                _log("       > > Rows: " + (getDisplay().getRowCount()) );
-
-
-                // We are near the end, so increase the page size.
-//                    int newPageSize = Math.min(
-//                            display.getVisibleRange().getLength() + incrementSize,
-//                            display.getRowCount());
-//                    display.setVisibleRange(0, newPageSize);
-
-//                for (int i = 0; i <DEFAULT_INCREMENT; i++) {
-//                    dataProvider.getList().add(new WidgetTest.ContactInfo("Title #" + (WidgetTest.ContactInfo.nextId + 1), "Message #" + (WidgetTest.ContactInfo.nextId + 1)));
-//                }
-//
-//                dataProvider.flush();
-
-
-//                startIndex = Math.max(display.getRowCount() - 35, 0);
-//                _log(" startIndex = " + startIndex);
+                display.setVisibleRange( start, length);
+                offsetStartPanel.setHeight(start  * 45 + "px");
+                offsetEndPanel.setHeight((display.getRowCount() - (start + length))  * 45 + "px");
 
                 if(selectionModel.getSelectedObject() != null) {
                     selectedItem = selectionModel.getSelectedObject();
                     selectionModel.clear();
                 }
 
-//                _log(" setting visible range " + Math.max(startIndex + 15, 0) + " - " + Math.min(startIndex + 30, display.getRowCount()));
-//                display.setVisibleRange( Math.max(startIndex + 15, 0) , Math.min(startIndex + 30, display.getRowCount()));
-//                offsetStartPanel.setHeight(Math.max(startIndex + 15, 0)  * 45 + "px");
-
                 scrollable.setVerticalScrollPosition(lastScrollPos);
 
-//                 Update start and end indexes
+                // Update start and end indexes
                 updateStartEndIndexes();
 
             }
@@ -341,13 +201,9 @@ public class ShowMorePagerPanel extends AbstractPager {
 //        super.setDisplay(display);
 
         assert display instanceof Widget : "display must extend Widget";
-//        rootPanel.add((Widget) display);
         rootPanel.insert((Widget) display, 1);
-
         scrollable.setWidget(rootPanel);
         super.setDisplay(display);
-
-
         ((CellList)display).setSelectionModel(selectionModel);
         selectionModel.clear();
 
@@ -370,12 +226,7 @@ public class ShowMorePagerPanel extends AbstractPager {
 
     @Override
     protected void onRangeOrRowCountChanged() {
-//        _log(" >> RangeChanged total rows: " + getDisplay().getRowCount());
-//        startIndex = getDisplay().getVisibleRange().getStart();
-//        endIndex = getDisplay().getVisibleRange().getLength() - 1;
-//
-//        _log(" [startIndex= " + startIndex + " endIndex= " + endIndex + "]");
-//        updateStartEndIndexes();
+
     }
 
 
