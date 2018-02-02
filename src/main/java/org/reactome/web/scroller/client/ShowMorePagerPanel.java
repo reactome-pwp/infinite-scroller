@@ -76,11 +76,13 @@ public class ShowMorePagerPanel extends AbstractPager {
         initWidget(scrollable);
 
         offsetStartPanel = new SimplePanel();
-        offsetStartPanel.getElement().getStyle().setBackgroundColor("green");
+        offsetStartPanel.getElement().getStyle().setBackgroundColor("white");
+        offsetStartPanel.getElement().getStyle().setOpacity(0.01);
         offsetStartPanel.setHeight("0px");
 
         offsetEndPanel = new SimplePanel();
-        offsetEndPanel.getElement().getStyle().setBackgroundColor("red");
+        offsetEndPanel.getElement().getStyle().setBackgroundColor("white");
+        offsetEndPanel.getElement().getStyle().setOpacity(0.01);
         offsetEndPanel.setHeight("0px");
 
         rootPanel = new FlowPanel();
@@ -116,7 +118,7 @@ public class ShowMorePagerPanel extends AbstractPager {
                     offsetStartPanel.setHeight(start * 45 + "px");
                     offsetEndPanel.setHeight((display.getRowCount() - (start + length))  * 45 + "px");
 
-                    scrollable.setVerticalScrollPosition(lastScrollPos + 1);
+                    scrollable.setVerticalScrollPosition(curStartIndex * 45);
 
                 }
                 return;
@@ -126,7 +128,7 @@ public class ShowMorePagerPanel extends AbstractPager {
 //            int maxScrollTop = scrollable.getWidget().getOffsetHeight() - scrollable.getOffsetHeight();
 
 
-            if (lastScrollPos >= (((curEndIndex) * 45) - scrollable.getOffsetHeight())) { //Needs Updating using the endIndex
+            if (lastScrollPos >= (((curEndIndex) * 45) - scrollable.getOffsetHeight())) {
 
                 if (curEndIndex >= display.getRowCount() - 1) {
                     // Requires expanding the rows with new data if available
@@ -146,7 +148,7 @@ public class ShowMorePagerPanel extends AbstractPager {
                 offsetStartPanel.setHeight(start  * 45 + "px");
                 offsetEndPanel.setHeight((display.getRowCount() - (start + length))  * 45 + "px");
 
-                scrollable.setVerticalScrollPosition(lastScrollPos);
+                scrollable.setVerticalScrollPosition( (((curEndIndex) * 45) - scrollable.getOffsetHeight()) );
             }
         });
     }
