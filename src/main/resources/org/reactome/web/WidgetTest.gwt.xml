@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='widgettest'>
+    <inherits name='com.google.gwt.user.User'/>
+
+    <inherits name="org.reactome.web.scroller.Scroller" />
+
+    <!-- Specify the app entry point class.                         -->
+    <entry-point class='org.reactome.web.scroller.test.WidgetTest'/>
+
+    <!-- Specify the paths for translatable code                    -->
+    <source path='scroller'/>
+</module>
