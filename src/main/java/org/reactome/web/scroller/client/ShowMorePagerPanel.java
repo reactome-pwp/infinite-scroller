@@ -24,7 +24,10 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.cellview.client.AbstractPager;
 import com.google.gwt.user.cellview.client.CellList;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasRows;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SingleSelectionModel;
@@ -41,6 +44,9 @@ public class ShowMorePagerPanel extends AbstractPager {
      * The default increment size.
      */
     private static final int DEFAULT_INCREMENT = 20;
+    private static final int DEFAULT_VISIBLE_ITEMS = 30;
+
+    private static final boolean isFirefox = isFirefox();
 
     /**
      * The increment size.
@@ -104,7 +110,7 @@ public class ShowMorePagerPanel extends AbstractPager {
 
             int curStartIndex = getDisplay().getVisibleRange().getStart();
             int curEndIndex = curStartIndex + getDisplay().getVisibleRange().getLength() - 1;
-            _log(" Rows: " + getDisplay().getRowCount() + " [startIndex= " + curStartIndex + " endIndex= " + curEndIndex + "] visible: " + ((curEndIndex + 1) - curStartIndex));
+//            _log(" Rows: " + getDisplay().getRowCount() + " [startIndex= " + curStartIndex + " endIndex= " + curEndIndex + "] visible: " + ((curEndIndex + 1) - curStartIndex));
             int start, length;
 
             if (oldScrollPos > lastScrollPos) {
@@ -112,14 +118,14 @@ public class ShowMorePagerPanel extends AbstractPager {
                 if (lastScrollPos <= curStartIndex * 45) {
 
                     start = Math.max(curStartIndex - 15, 0);
-                    length = Math.min(25, display.getRowCount());
+                    length = Math.min(DEFAULT_VISIBLE_ITEMS, display.getRowCount());
 
                     display.setVisibleRange( start, length);
                     offsetStartPanel.setHeight(start * 45 + "px");
                     offsetEndPanel.setHeight((display.getRowCount() - (start + length))  * 45 + "px");
 
-                    scrollable.setVerticalScrollPosition(curStartIndex * 45);
-
+                    if (isFirefox) { scrollable.setVerticalScrollPosition(lastScrollPos);}
+                    else { scrollable.setVerticalScrollPosition(curStartIndex * 45); }
                 }
                 return;
             }
@@ -138,17 +144,18 @@ public class ShowMorePagerPanel extends AbstractPager {
                     }
                     dataProvider.flush();
                     start = Math.max(display.getRowCount() - 30, 0);
-                    length = Math.min(30, display.getRowCount());
+                    length = Math.min(DEFAULT_VISIBLE_ITEMS, display.getRowCount());
                 } else {
                     start = curEndIndex - 10;
-                    length = Math.min(30, 10 + display.getRowCount() - curEndIndex);
+                    length = Math.min(DEFAULT_VISIBLE_ITEMS, 10 + display.getRowCount() - curEndIndex);
                 }
 
                 display.setVisibleRange( start, length);
                 offsetStartPanel.setHeight(start  * 45 + "px");
                 offsetEndPanel.setHeight((display.getRowCount() - (start + length))  * 45 + "px");
 
-                scrollable.setVerticalScrollPosition( (((curEndIndex) * 45) - scrollable.getOffsetHeight()) );
+                if (isFirefox) { scrollable.setVerticalScrollPosition(lastScrollPos);}
+                else { scrollable.setVerticalScrollPosition((((curEndIndex) * 45) - scrollable.getOffsetHeight())); }
             }
         });
     }
@@ -203,6 +210,13 @@ public class ShowMorePagerPanel extends AbstractPager {
             $wnd.console.log(message);
         }
     }-*/;
+
+    private static native boolean isFirefox()/*-{
+        // Firefox 1.0+
+        return typeof InstallTrigger !== 'undefined';
+    }-*/;
+
+
 
 
     public static Resources RESOURCES;
