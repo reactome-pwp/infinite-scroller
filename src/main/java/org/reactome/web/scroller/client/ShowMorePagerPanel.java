@@ -22,12 +22,8 @@ package org.reactome.web.scroller.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
-import com.google.gwt.user.cellview.client.AbstractPager;
 import com.google.gwt.user.cellview.client.CellList;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.HasRows;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SingleSelectionModel;
@@ -38,15 +34,18 @@ import com.google.gwt.view.client.SingleSelectionModel;
  * A scrolling pager that automatically increases the range every time the
  * scroll bar reaches the bottom.
  */
-public class ShowMorePagerPanel extends AbstractPager {
+public class ShowMorePagerPanel extends Composite { //extends AbstractPager {
 
     /**
      * The default increment size.
      */
     private static final int DEFAULT_INCREMENT = 20;
     private static final int DEFAULT_VISIBLE_ITEMS = 30;
+    private static final int DEFAULT_ROW_HEIGHT = 45;
 
     private static final boolean isFirefox = isFirefox();
+
+    private HasRows display;
 
     /**
      * The increment size.
@@ -100,45 +99,33 @@ public class ShowMorePagerPanel extends AbstractPager {
 
         // Handle scroll events.
         scrollable.addScrollHandler(event -> {
-            int oldScrollPos = lastScrollPos;
             lastScrollPos = scrollable.getVerticalScrollPosition();
 
-            HasRows display = getDisplay();
             if (display == null) {
                 return;
             }
 
-            int curStartIndex = getDisplay().getVisibleRange().getStart();
-            int curEndIndex = curStartIndex + getDisplay().getVisibleRange().getLength() - 1;
+            int curStartIndex = display.getVisibleRange().getStart();
+            int curEndIndex = curStartIndex + display.getVisibleRange().getLength() - 1;
 //            _log(" Rows: " + getDisplay().getRowCount() + " [startIndex= " + curStartIndex + " endIndex= " + curEndIndex + "] visible: " + ((curEndIndex + 1) - curStartIndex));
             int start, length;
 
-            if (oldScrollPos > lastScrollPos) {
+            if (lastScrollPos <= curStartIndex * DEFAULT_ROW_HEIGHT) {
 
-                if (lastScrollPos <= curStartIndex * 45) {
+                start = Math.max(curStartIndex - 15, 0);
+                length = Math.min(DEFAULT_VISIBLE_ITEMS, display.getRowCount());
 
-                    start = Math.max(curStartIndex - 15, 0);
-                    length = Math.min(DEFAULT_VISIBLE_ITEMS, display.getRowCount());
+                display.setVisibleRange( start, length);
+                offsetStartPanel.setHeight(start * DEFAULT_ROW_HEIGHT + "px");
+                offsetEndPanel.setHeight((display.getRowCount() - (start + length))  * DEFAULT_ROW_HEIGHT + "px");
 
-                    display.setVisibleRange( start, length);
-                    offsetStartPanel.setHeight(start * 45 + "px");
-                    offsetEndPanel.setHeight((display.getRowCount() - (start + length))  * 45 + "px");
+                if (isFirefox) { scrollable.setVerticalScrollPosition(lastScrollPos);}
+                else { scrollable.setVerticalScrollPosition(curStartIndex * DEFAULT_ROW_HEIGHT); }
 
-                    if (isFirefox) { scrollable.setVerticalScrollPosition(lastScrollPos);}
-                    else { scrollable.setVerticalScrollPosition(curStartIndex * 45); }
-                }
-                return;
-            }
-
-
-//            int maxScrollTop = scrollable.getWidget().getOffsetHeight() - scrollable.getOffsetHeight();
-
-
-            if (lastScrollPos >= (((curEndIndex) * 45) - scrollable.getOffsetHeight())) {
+            } else if (lastScrollPos >= (((curEndIndex) * DEFAULT_ROW_HEIGHT) - scrollable.getOffsetHeight())) {
 
                 if (curEndIndex >= display.getRowCount() - 1) {
                     // Requires expanding the rows with new data if available
-//                    _log(" Requesting new data... ");
                     for (int i = 0; i < DEFAULT_INCREMENT; i++) {
                         dataProvider.getList().add(new ContactInfo("Title #" + (ContactInfo.nextId + 1), "Message #" + (ContactInfo.nextId + 1)));
                     }
@@ -151,11 +138,15 @@ public class ShowMorePagerPanel extends AbstractPager {
                 }
 
                 display.setVisibleRange( start, length);
-                offsetStartPanel.setHeight(start  * 45 + "px");
-                offsetEndPanel.setHeight((display.getRowCount() - (start + length))  * 45 + "px");
+                offsetStartPanel.setHeight(start  * DEFAULT_ROW_HEIGHT + "px");
+                offsetEndPanel.setHeight((display.getRowCount() - (start + length))  * DEFAULT_ROW_HEIGHT + "px");
 
                 if (isFirefox) { scrollable.setVerticalScrollPosition(lastScrollPos);}
-                else { scrollable.setVerticalScrollPosition((((curEndIndex) * 45) - scrollable.getOffsetHeight())); }
+                else { scrollable.setVerticalScrollPosition((((curEndIndex) * DEFAULT_ROW_HEIGHT) - scrollable.getOffsetHeight())); }
+            }
+
+            if (scrollable.getVerticalScrollPosition() < offsetStartPanel.getElement().getOffsetHeight()) {
+                offsetStartPanel.setHeight(scrollable.getVerticalScrollPosition() + "px");
             }
         });
     }
@@ -170,16 +161,12 @@ public class ShowMorePagerPanel extends AbstractPager {
         return incrementSize;
     }
 
-    @Override
+//    @Override
     public void setDisplay(HasRows display) {
-//        assert display instanceof Widget : "display must extend Widget";
-//        scrollable.setWidget((Widget) display);
-//        super.setDisplay(display);
-
         assert display instanceof Widget : "display must extend Widget";
+        this.display = display;
         rootPanel.insert((Widget) display, 1);
         scrollable.setWidget(rootPanel);
-        super.setDisplay(display);
         ((CellList)display).setSelectionModel(selectionModel);
         selectionModel.clear();
 
@@ -198,12 +185,6 @@ public class ShowMorePagerPanel extends AbstractPager {
     public void setIncrementSize(int incrementSize) {
         this.incrementSize = incrementSize;
     }
-
-    @Override
-    protected void onRangeOrRowCountChanged() {
-
-    }
-
 
     private static native void _log(String message)/*-{
         if($wnd.console){
