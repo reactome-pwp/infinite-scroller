@@ -128,6 +128,8 @@ public class ShowMorePagerPanel extends Composite {
             if (scrollable.getVerticalScrollPosition() < offsetStartPanel.getElement().getOffsetHeight()) {
                 offsetStartPanel.setHeight(scrollable.getVerticalScrollPosition() + "px");
             }
+
+//            _log(" >> " + dataManager.toString() + " << ");
         });
     }
 

@@ -42,7 +42,7 @@ public class ListItemsManager<T> {
     }
 
     public void loadPreviousData() {
-        ShowMorePagerPanel._log(" << PreviousPage" );
+//        ShowMorePagerPanel._log(" << PreviousPage" );
         int start = Math.max(curStartIndex - 15, 0);
         int length = Math.min(ShowMorePagerPanel.DEFAULT_VISIBLE_ITEMS, totalRows);
         if(start < curStartIndex) {
@@ -52,7 +52,7 @@ public class ListItemsManager<T> {
     }
 
     public void loadNextData() {
-        ShowMorePagerPanel._log(" >> NextPage" );
+//        ShowMorePagerPanel._log(" >> NextPage" );
         int start = curEndIndex - 10;
         int length = Math.min(ShowMorePagerPanel.DEFAULT_VISIBLE_ITEMS, 10 + totalRows - curEndIndex);
 
@@ -115,6 +115,9 @@ public class ListItemsManager<T> {
 
     @Override
     public String toString() {
-        return " >> total rows: " + totalRows + " CurStart: " + curStartIndex + " CurEnd: " + curEndIndex;
+        return " Rows: " + totalRows
+                + " buffer size: " + buffer.getList().size()
+                + " Start: " + curStartIndex
+                + " End: " + curEndIndex;
     }
 }
