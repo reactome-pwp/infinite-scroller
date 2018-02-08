@@ -1,4 +1,4 @@
-package org.reactome.web.scroller.client;
+package org.reactome.web.scroller.excluded;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
@@ -24,6 +24,8 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.HasRows;
+import org.reactome.web.scroller.client.ContactInfo;
+import org.reactome.web.scroller.client.ListItemsManager;
 
 import java.util.ArrayList;
 import java.util.List;

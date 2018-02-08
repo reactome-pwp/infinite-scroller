@@ -1,7 +1,6 @@
 package org.reactome.web.scroller.client;
 
 import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.HasRows;
 import com.google.gwt.view.client.ListDataProvider;
 
 import java.util.List;
@@ -9,54 +8,59 @@ import java.util.List;
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class ListItemsManager<T> {
+public class ListManager<T> {
     private int totalRows = 0;
     private int curStartIndex = 0;
     private int curEndIndex = 0;
-    private HasRows display;
+
+    private InfiniteListDataProvider<T> dataProvider;
 
     private ListDataProvider<T> buffer = new ListDataProvider<>();
 
-    public ListItemsManager() {
+    public ListManager(InfiniteListDataProvider<T> dataProvider) {
+        this.dataProvider = dataProvider;
     }
 
     public void setDataDisplay(final HasData<T> display) {
         buffer.addDataDisplay(display);
-        this.display = display;
     }
 
-    public void loadNewData(int s, int l) {
-        List<T> newItems = (List<T>) ShowMorePagerPanel.requestContacts(s, l);
+    public void setDataProvider(InfiniteListDataProvider<T> dataProvider) {
+        this.dataProvider = dataProvider;
+    }
+
+    public void loadNewData(int start, int length, int pageSize) {
+        List<T> newItems = dataProvider.requestItems(start, length);
         totalRows += newItems.size();
 
         if (curEndIndex == 0) {
             curEndIndex = totalRows - 1;
             addItemsToEndOfBuffer(newItems);
         } else {
-            int start = Math.max(totalRows - ShowMorePagerPanel.DEFAULT_VISIBLE_ITEMS, 0);
-            int length = Math.min(ShowMorePagerPanel.DEFAULT_VISIBLE_ITEMS, totalRows);
+            int newStart = Math.max(totalRows - pageSize, 0);
+            int newLength = Math.min(pageSize, totalRows);
 
-            updateHeadAndTailOfBuffer(start, length, newItems);
+            updateHeadAndTailOfBuffer(newStart, newLength, newItems);
         }
 
     }
 
-    public void loadPreviousData() {
+    public void loadPreviousData(int pageSize) {
 //        ShowMorePagerPanel._log(" << PreviousPage" );
-        int start = Math.max(curStartIndex - 15, 0);
-        int length = Math.min(ShowMorePagerPanel.DEFAULT_VISIBLE_ITEMS, totalRows);
+        int start = Math.max(curStartIndex - (pageSize/2), 0); //15
+        int length = Math.min(pageSize, totalRows);
         if(start < curStartIndex) {
-            List<T> newItems = (List<T>) ShowMorePagerPanel.requestContacts(start, length);
+            List<T> newItems = dataProvider.requestItems(start, length);
             updateEntireBuffer(start, length, newItems);
         }
     }
 
-    public void loadNextData() {
+    public void loadNextData(int pageSize) {
 //        ShowMorePagerPanel._log(" >> NextPage" );
-        int start = curEndIndex - 10;
-        int length = Math.min(ShowMorePagerPanel.DEFAULT_VISIBLE_ITEMS, 10 + totalRows - curEndIndex);
+        int start = curEndIndex - (pageSize/3); //10
+        int length = Math.min(pageSize, (pageSize/3) + totalRows - curEndIndex);
 
-        List<T> newItems = (List<T>) ShowMorePagerPanel.requestContacts(start, length);
+        List<T> newItems = dataProvider.requestItems(start, length);
         updateEntireBuffer(start, length, newItems);
     }
 

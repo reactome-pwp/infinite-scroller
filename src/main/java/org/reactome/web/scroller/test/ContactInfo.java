@@ -1,4 +1,4 @@
-package org.reactome.web.scroller.client;
+package org.reactome.web.scroller.test;
 
 /**
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
