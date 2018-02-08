@@ -22,30 +22,30 @@ package org.reactome.web.scroller.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
-import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.HasRows;
-import com.google.gwt.view.client.ListDataProvider;
-import com.google.gwt.view.client.SingleSelectionModel;
 
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * A scrolling pager that automatically increases the range every time the
  * scroll bar reaches the bottom.
  */
-public class ShowMorePagerPanel extends Composite { //extends AbstractPager {
+public class ShowMorePagerPanel extends Composite {
 
     /**
      * The default increment size.
      */
-    private static final int DEFAULT_INCREMENT = 20;
-    private static final int DEFAULT_VISIBLE_ITEMS = 30;
-    private static final int DEFAULT_ROW_HEIGHT = 45;
+    public static final int DEFAULT_INCREMENT = 20;
+    public static final int DEFAULT_VISIBLE_ITEMS = 30;
+    public static final int DEFAULT_ROW_HEIGHT = 45;
 
     private static final boolean isFirefox = isFirefox();
 
     private HasRows display;
+    private ListItemsManager dataManager;
 
     /**
      * The increment size.
@@ -62,17 +62,9 @@ public class ShowMorePagerPanel extends Composite { //extends AbstractPager {
      */
     private final ScrollPanel scrollable = new ScrollPanel();
 
-    private ListDataProvider<ContactInfo> dataProvider;
-
     private SimplePanel offsetStartPanel;
     private SimplePanel offsetEndPanel;
-
     private FlowPanel rootPanel;
-
-    private Object selectedItem = null;
-
-    // Add a selection model so we can select cells.
-    final SingleSelectionModel<ContactInfo> selectionModel = new SingleSelectionModel<ContactInfo>(ContactInfo.KEY_PROVIDER);
 
     /**
      * Construct a new {@link ShowMorePagerPanel}.
@@ -105,41 +97,29 @@ public class ShowMorePagerPanel extends Composite { //extends AbstractPager {
                 return;
             }
 
-            int curStartIndex = display.getVisibleRange().getStart();
-            int curEndIndex = curStartIndex + display.getVisibleRange().getLength() - 1;
-//            _log(" Rows: " + getDisplay().getRowCount() + " [startIndex= " + curStartIndex + " endIndex= " + curEndIndex + "] visible: " + ((curEndIndex + 1) - curStartIndex));
-            int start, length;
+            int curStartIndex = dataManager.getCurStartIndex();
+            int curEndIndex = dataManager.getCurEndIndex();
 
             if (lastScrollPos <= curStartIndex * DEFAULT_ROW_HEIGHT) {
+                dataManager.loadPreviousData();
 
-                start = Math.max(curStartIndex - 15, 0);
-                length = Math.min(DEFAULT_VISIBLE_ITEMS, display.getRowCount());
-
-                display.setVisibleRange( start, length);
-                offsetStartPanel.setHeight(start * DEFAULT_ROW_HEIGHT + "px");
-                offsetEndPanel.setHeight((display.getRowCount() - (start + length))  * DEFAULT_ROW_HEIGHT + "px");
+                offsetStartPanel.setHeight(dataManager.getCurStartIndex()  * DEFAULT_ROW_HEIGHT + "px");
+                offsetEndPanel.setHeight((dataManager.getTotalRows() - (dataManager.getCurStartIndex() + dataManager.getCurrentRows()))  * DEFAULT_ROW_HEIGHT + "px");
 
                 if (isFirefox) { scrollable.setVerticalScrollPosition(lastScrollPos);}
                 else { scrollable.setVerticalScrollPosition(curStartIndex * DEFAULT_ROW_HEIGHT); }
 
             } else if (lastScrollPos >= (((curEndIndex) * DEFAULT_ROW_HEIGHT) - scrollable.getOffsetHeight())) {
-
-                if (curEndIndex >= display.getRowCount() - 1) {
+                if (curEndIndex >= dataManager.getTotalRows() - 1) {
                     // Requires expanding the rows with new data if available
-                    for (int i = 0; i < DEFAULT_INCREMENT; i++) {
-                        dataProvider.getList().add(new ContactInfo("Title #" + (ContactInfo.nextId + 1), "Message #" + (ContactInfo.nextId + 1)));
-                    }
-                    dataProvider.flush();
-                    start = Math.max(display.getRowCount() - 30, 0);
-                    length = Math.min(DEFAULT_VISIBLE_ITEMS, display.getRowCount());
+                    dataManager.loadNewData(dataManager.getTotalRows(), DEFAULT_INCREMENT);
+                    display.setVisibleRange(0, dataManager.getCurrentRows());
                 } else {
-                    start = curEndIndex - 10;
-                    length = Math.min(DEFAULT_VISIBLE_ITEMS, 10 + display.getRowCount() - curEndIndex);
+                    dataManager.loadNextData();
                 }
 
-                display.setVisibleRange( start, length);
-                offsetStartPanel.setHeight(start  * DEFAULT_ROW_HEIGHT + "px");
-                offsetEndPanel.setHeight((display.getRowCount() - (start + length))  * DEFAULT_ROW_HEIGHT + "px");
+                offsetStartPanel.setHeight(dataManager.getCurStartIndex()  * DEFAULT_ROW_HEIGHT + "px");
+                offsetEndPanel.setHeight((dataManager.getTotalRows() - (dataManager.getCurStartIndex() + dataManager.getCurrentRows()))  * DEFAULT_ROW_HEIGHT + "px");
 
                 if (isFirefox) { scrollable.setVerticalScrollPosition(lastScrollPos);}
                 else { scrollable.setVerticalScrollPosition((((curEndIndex) * DEFAULT_ROW_HEIGHT) - scrollable.getOffsetHeight())); }
@@ -161,19 +141,17 @@ public class ShowMorePagerPanel extends Composite { //extends AbstractPager {
         return incrementSize;
     }
 
-//    @Override
     public void setDisplay(HasRows display) {
         assert display instanceof Widget : "display must extend Widget";
         this.display = display;
         rootPanel.insert((Widget) display, 1);
         scrollable.setWidget(rootPanel);
-        ((CellList)display).setSelectionModel(selectionModel);
-        selectionModel.clear();
-
+//        ((CellList)display).setSelectionModel(selectionModel);
+//        selectionModel.clear();
     }
 
-    public void setDataProvider(ListDataProvider dataProvider) {
-        this.dataProvider = dataProvider;
+    public void setDataManager(ListItemsManager dataManager) {
+        this.dataManager = dataManager;
     }
 
     /**
@@ -186,7 +164,16 @@ public class ShowMorePagerPanel extends Composite { //extends AbstractPager {
         this.incrementSize = incrementSize;
     }
 
-    private static native void _log(String message)/*-{
+    public static List<ContactInfo> requestContacts(int start, int length) {
+        List<ContactInfo> rtn = new ArrayList<>();
+        for (int i = start; i <start + length; i++) {
+//            _log("generating contact " + i);
+            rtn.add(new ContactInfo("Title #" + i, "Message #" + i));
+        }
+        return rtn;
+    }
+
+    public static native void _log(String message)/*-{
         if($wnd.console){
             $wnd.console.log(message);
         }

@@ -7,9 +7,9 @@ import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.cellview.client.HasKeyboardPagingPolicy;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
-import com.google.gwt.view.client.ListDataProvider;
-import com.google.gwt.view.client.ProvidesKey;
+import com.google.gwt.view.client.SingleSelectionModel;
 import org.reactome.web.scroller.client.ContactInfo;
+import org.reactome.web.scroller.client.ListItemsManager;
 import org.reactome.web.scroller.client.ShowMorePagerPanel;
 
 
@@ -23,8 +23,10 @@ public class WidgetTest implements EntryPoint {
     /**
      * The provider that holds the list of contacts in the database.
      */
-    private ListDataProvider<ContactInfo> dataProvider = new ListDataProvider<>();
+    private ListItemsManager<ContactInfo> listItemsManager = new ListItemsManager<>();
 
+    // Add a selection model so we can select cells.
+    final SingleSelectionModel<ContactInfo> selectionModel = new SingleSelectionModel<>(ContactInfo.KEY_PROVIDER);
 
     /**
      * The Cell used to render a {@link ContactInfo}.
@@ -45,7 +47,7 @@ public class WidgetTest implements EntryPoint {
                 return;
             }
 
-            sb.appendHtmlConstant("<table>");
+            sb.appendHtmlConstant("<table style='height:45;'>");
             sb.appendHtmlConstant("<tr>");
             // Add the name and address.
             sb.appendHtmlConstant("<td style='font-size:95%;'>");
@@ -63,26 +65,23 @@ public class WidgetTest implements EntryPoint {
         ContactCell contactCell = new ContactCell();
 
         cellList = new CellList<>(contactCell, ContactInfo.KEY_PROVIDER);
-        cellList.setPageSize(20);
+
+        cellList.setPageSize(30);
         cellList.setKeyboardPagingPolicy(HasKeyboardPagingPolicy.KeyboardPagingPolicy.INCREASE_RANGE);
         cellList.setKeyboardSelectionPolicy(HasKeyboardSelectionPolicy.KeyboardSelectionPolicy.DISABLED);
+        cellList.setSelectionModel(selectionModel);
+        selectionModel.clear();
 
-        dataProvider.addDataDisplay(cellList);
-        addContacts();
+//        dataProvider.setDataDisplay(cellList);
+        listItemsManager.setDataDisplay(cellList);
+        listItemsManager.loadNewData(listItemsManager.getTotalRows(),30);
 
         ShowMorePagerPanel pagerPanel = new ShowMorePagerPanel();
         pagerPanel.setStyleName(ShowMorePagerPanel.RESOURCES.getCSS().scrollable());
         pagerPanel.setDisplay(cellList);
-        pagerPanel.setDataProvider(dataProvider);
+        pagerPanel.setDataManager(listItemsManager);
 
         RootLayoutPanel.get().add(pagerPanel);
 
-    }
-
-    public void addContacts() {
-        for (int i = 0; i <20 ; i++) {
-            dataProvider.getList().add(new ContactInfo("Title #" + (ContactInfo.nextId + 1), "Message #" + (ContactInfo.nextId + 1)));
-        }
-        dataProvider.flush();
     }
 }
