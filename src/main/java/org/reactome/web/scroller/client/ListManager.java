@@ -15,10 +15,19 @@ public class ListManager<T> {
 
     private InfiniteListDataProvider<T> dataProvider;
 
+    // This is used to keep
     private ListDataProvider<T> buffer = new ListDataProvider<>();
 
     public ListManager(InfiniteListDataProvider<T> dataProvider) {
         this.dataProvider = dataProvider;
+    }
+
+    public void clear() {
+        buffer.getList().clear();
+        totalRows = 0;
+        curStartIndex = 0;
+        curEndIndex = 0;
+
     }
 
     public void setDataDisplay(final HasData<T> display) {
@@ -35,7 +44,7 @@ public class ListManager<T> {
 
         if (curEndIndex == 0) {
             curEndIndex = totalRows - 1;
-            addItemsToEndOfBuffer(newItems);
+            addItemsToTailOfBuffer(newItems);
         } else {
             int newStart = Math.max(totalRows - pageSize, 0);
             int newLength = Math.min(pageSize, totalRows);
@@ -85,11 +94,19 @@ public class ListManager<T> {
         return buffer;
     }
 
-    private void addItemsToEndOfBuffer(List<T> newItems){
+    /**
+     * Adds the specified list of items at the tail of the list
+     * @param newItems
+     */
+    private void addItemsToTailOfBuffer(List<T> newItems){
         buffer.getList().addAll(newItems);
     }
 
-    private void removeItemsFromStartOfBuffer(int numberOfItemsToRemove){
+    /**
+     * Removes the specified number of items from the head of the buffer
+     * @param numberOfItemsToRemove
+     */
+    private void removeItemsFromHeadOfBuffer(int numberOfItemsToRemove){
         for (int i = 0; i < numberOfItemsToRemove; i++) {
             buffer.getList().remove(0);
         }
@@ -98,8 +115,8 @@ public class ListManager<T> {
     private void updateHeadAndTailOfBuffer(int start, int length, List<T> newItems) {
         int shift = start - curStartIndex;
 
-        removeItemsFromStartOfBuffer(shift);
-        addItemsToEndOfBuffer(newItems);
+        removeItemsFromHeadOfBuffer(shift);
+        addItemsToTailOfBuffer(newItems);
         buffer.flush();
 
         curStartIndex += shift;

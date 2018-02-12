@@ -35,6 +35,8 @@ public class InfiniteScrollList<T> extends Composite {
     private int lastScrollPos = 0;
 
     private int pageSize = DEFAULT_PAGE_SIZE;
+    private int dataIncrement = DEFAULT_DATA_INCREMENT;
+
     private int listWindowHeight = 0;
     private int rowSize = DEFAULT_ITEM_HEIGHT;
 
@@ -102,7 +104,7 @@ public class InfiniteScrollList<T> extends Composite {
             } else if (lastScrollPos >= (((curEndIndex) * DEFAULT_ITEM_HEIGHT) - scrollable.getOffsetHeight())) {
                 if (curEndIndex >= listManager.getTotalRows() - 1) {
                     // Requires expanding the rows with new data if available
-                    listManager.loadNewData(listManager.getTotalRows(), DEFAULT_DATA_INCREMENT, pageSize);
+                    listManager.loadNewData(listManager.getTotalRows(), dataIncrement, pageSize);
                     display.setVisibleRange(0, listManager.getCurrentRows());
                 } else {
                     listManager.loadNextData(pageSize);
@@ -127,6 +129,25 @@ public class InfiniteScrollList<T> extends Composite {
         });
     }
 
+    public void loadFirstPage() {
+        if (listManager.getTotalRows() == 0) {
+            listManager.loadNewData(0, pageSize, pageSize);
+        }
+    }
+
+    public void setPageSize(int newPageSize) {
+        this.pageSize = newPageSize;
+        display.setPageSize(newPageSize);
+
+        listManager.clear();
+        listManager.loadNewData(0, newPageSize, newPageSize);
+
+        offsetStartPanel.setHeight(listManager.getCurStartIndex()  * DEFAULT_ITEM_HEIGHT + "px");
+        offsetEndPanel.setHeight((listManager.getTotalRows() - (listManager.getCurStartIndex() + listManager.getCurrentRows()))  * DEFAULT_ITEM_HEIGHT + "px");
+
+        scrollable.setVerticalScrollPosition(1);
+
+    }
 
     public void setSelectionModel(SelectionModel<? super T> selectionModel) {
         display.setSelectionModel(selectionModel);
