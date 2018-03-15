@@ -2,7 +2,6 @@ package org.reactome.web.scroller.test;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
@@ -63,25 +62,35 @@ public class WidgetTest implements EntryPoint {
         SimpleLayoutPanel container = new SimpleLayoutPanel();
         container.setHeight(400 + "px");
         container.setWidth(250 + "px");
-        container.getElement().getStyle().setBackgroundColor("green");
+        container.getElement().getStyle().setBackgroundColor("azure");
         container.add(myList);
 
         RootLayoutPanel.get().add(container);
 
 
-        Scheduler.get().scheduleFixedDelay(new Scheduler.RepeatingCommand() {
-            int i = 0;
-            @Override
-            public boolean execute() {
-                if(i%2==0) {
-                    container.setHeight(200 + "px");
-                } else {
-                    container.setHeight(400 + "px");
-                }
-                i++;
-                return true;
-            }
-        }, 3000);
+//        Scheduler.get().scheduleFixedDelay(new Scheduler.RepeatingCommand() {
+//            int i = 0;
+//            @Override
+//            public boolean execute() {
+//                if(i%2==0) {
+//                    container.setHeight(200 + "px");
+//                } else {
+//                    container.setHeight(400 + "px");
+//                }
+//                i++;
+//                return true;
+//            }
+//        }, 3000);
+
+//        Scheduler.get().scheduleFixedDelay(new Scheduler.RepeatingCommand() {
+//            int i = 0;
+//            @Override
+//            public boolean execute() {
+//                myList.setPageSize(30);
+//                myList.loadFirstPage();
+//                return false;
+//            }
+//        }, 10000);
 
 
     }
