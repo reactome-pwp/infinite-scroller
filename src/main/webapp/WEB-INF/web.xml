@@ -3,11 +3,41 @@
     PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 
-<web-app>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
-  <!-- Default page to serve -->
-  <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-  </welcome-file-list>
+        <!-- Default page to serve -->
+<welcome-file-list>
+  <welcome-file>index.html</welcome-file>
+</welcome-file-list>
+
+
+  <!-- Reactome Content Service (ONLY USED IN DEV MODE) -->
+  <servlet>
+    <servlet-name>ContentServiceProxy</servlet-name>
+    <servlet-class>org.reactome.server.utils.proxy.ProxyServlet</servlet-class>
+    <init-param>
+      <param-name>proxyHost</param-name>
+      <!--<param-value>localhost</param-value>-->
+      <!--<param-value>reactome.org</param-value>-->
+      <param-value>reactomedev.oicr.on.ca</param-value>
+      <!--<param-value>reactomerelease.oicr.on.ca</param-value>-->
+    </init-param>
+    <init-param>
+      <param-name>proxyPort</param-name>
+      <!--<param-value>8686</param-value>-->
+      <param-value>80</param-value>
+    </init-param>
+    <init-param>
+      <param-name>proxyPath</param-name>
+      <!--<param-value>/</param-value>-->
+      <param-value>/ContentService</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ContentServiceProxy</servlet-name>
+    <url-pattern>/ContentService/*</url-pattern>
+  </servlet-mapping>
 
 </web-app>

@@ -42,6 +42,7 @@
 
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <reactome.utils.version>1.0.3</reactome.utils.version>
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
 
         <appModule>org.reactome.web.scroller.Scroller</appModule>
@@ -103,6 +104,13 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-nop</artifactId>
             <version>1.7.22</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.reactome.server.utils</groupId>
+            <artifactId>reactome-utils</artifactId>
+            <version>${reactome.utils.version}</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 

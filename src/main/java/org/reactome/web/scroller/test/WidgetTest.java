@@ -2,20 +2,22 @@ package org.reactome.web.scroller.test;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.view.client.SingleSelectionModel;
 import org.reactome.web.scroller.client.InfiniteScrollList;
+
+import static org.reactome.web.scroller.client.util.Placeholder.ROWS;
+import static org.reactome.web.scroller.client.util.Placeholder.START;
+
 
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class WidgetTest implements EntryPoint {
-
-    private CellList<ContactInfo> cellList;
 
     // Add a selection model so we can select cells.
     final SingleSelectionModel<ContactInfo> selectionModel = new SingleSelectionModel<>(ContactInfo.KEY_PROVIDER);
@@ -55,8 +57,9 @@ public class WidgetTest implements EntryPoint {
 
         // Create a CellList.
         ContactCell contactCell = new ContactCell();
+        AsyncContactProvider dataProvider = new AsyncContactProvider();
+        dataProvider.setURL("/ContentService/search/fireworks?query=pten&species=Homo%20sapiens" + "&" + START.getUrlValue() + "&" + ROWS.getUrlValue());
 
-        ContactProvider dataProvider = new ContactProvider();
         InfiniteScrollList<ContactInfo> myList = new InfiniteScrollList(contactCell, ContactInfo.KEY_PROVIDER, dataProvider);
 
         SimpleLayoutPanel container = new SimpleLayoutPanel();
@@ -67,30 +70,11 @@ public class WidgetTest implements EntryPoint {
 
         RootLayoutPanel.get().add(container);
 
-
-//        Scheduler.get().scheduleFixedDelay(new Scheduler.RepeatingCommand() {
-//            int i = 0;
-//            @Override
-//            public boolean execute() {
-//                if(i%2==0) {
-//                    container.setHeight(200 + "px");
-//                } else {
-//                    container.setHeight(400 + "px");
-//                }
-//                i++;
-//                return true;
-//            }
-//        }, 3000);
-
-//        Scheduler.get().scheduleFixedDelay(new Scheduler.RepeatingCommand() {
-//            int i = 0;
-//            @Override
-//            public boolean execute() {
-//                myList.setPageSize(30);
-//                myList.loadFirstPage();
-//                return false;
-//            }
-//        }, 10000);
+        Scheduler.get().scheduleFixedDelay(() -> {
+            myList.setPageSize(30);
+            myList.loadFirstPage();
+            return false;
+        }, 2000);
 
 
     }

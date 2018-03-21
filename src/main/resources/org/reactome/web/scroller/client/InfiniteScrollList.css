@@ -1,16 +1,56 @@
 .scrollable {
+    position: relative;
     height: 100%;
     width: 100%;
     border: 1px solid #ccc;
     text-align: left;
 }
 
-.offsetDiv {
-    height: 0;
-    background: white;
-    opacity: 0.1;
+.container {
+    /*position: relative;*/
 }
 
-.contactFormCell {
-    padding-left: 20px;
+.offsetDiv {
+    height: 0;
+    background-color: rgba(255, 255, 255, 0.0);
+    position: relative;
+    overflow: visible;
+}
+
+.loadingInfo {
+    display: block;
+    position: absolute;
+    background-color: rgba(218, 165, 32, 0.8);
+    color: white;
+    width: 99%;
+    height: 10px;
+    border-radius: 5px 0 0 5px;
+
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+    font-size: x-small !important;
+    line-height: 1em;
+}
+
+.loadingInfo div {
+    width: 90%;
+    text-align: right;
+}
+
+.errorInfo {
+    display: block;
+    position: absolute;
+    background-color: rgba(218, 41, 33, 0.9);
+    color: white;
+    width: 99%;
+    height: 10px;
+    border-radius: 5px 5px 5px 5px;
+
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+    font-size: x-small !important;
+    line-height: 1em;
+}
+
+.errorInfo div {
+    width: 99%;
+    text-align: center;
 }
