@@ -13,9 +13,12 @@ import static org.reactome.web.scroller.client.util.Placeholder.START;
  */
 public abstract class AbstractListAsyncDataProvider<T> implements InfiniteListAsyncDataProvider<T> {
 
-    protected String URL;
+    protected String url;
     protected Request request;
     private AsyncListManager<T> handler;
+
+    private List<T> lastItemsToShow = null;
+    private int sizeOfResults = Integer.MAX_VALUE;
 
     @Override
     public void setHandler(AsyncListManager<T> handler) {
@@ -24,7 +27,7 @@ public abstract class AbstractListAsyncDataProvider<T> implements InfiniteListAs
 
     @Override
     public void setURL(String url) {
-        URL = url;
+        this.url = url;
     }
 
     @Override
@@ -35,7 +38,9 @@ public abstract class AbstractListAsyncDataProvider<T> implements InfiniteListAs
                 public void onResponseReceived(Request request, Response response) {
                     switch (response.getStatusCode()) {
                         case Response.SC_OK:
-                            handler.onNewDataArrived(processResult(response.getText()), start, length);
+                            List<T> toShow = processResult(response.getText());
+                            addExtraItems(toShow, start, length);
+                            handler.onNewDataArrived(toShow, start, length);
                             break;
                         default:
                             handler.onErrorRetrievingData(response.getStatusText());
@@ -60,7 +65,9 @@ public abstract class AbstractListAsyncDataProvider<T> implements InfiniteListAs
                 public void onResponseReceived(Request request, Response response) {
                     switch (response.getStatusCode()) {
                         case Response.SC_OK:
-                            handler.onNextDataArrived(processResult(response.getText()), start, length);
+                            List<T> toShow = processResult(response.getText());
+                            addExtraItems(toShow, start, length);
+                            handler.onNextDataArrived(toShow, start, length);
                             break;
                         default:
                             handler.onErrorRetrievingData(response.getStatusText());
@@ -85,10 +92,12 @@ public abstract class AbstractListAsyncDataProvider<T> implements InfiniteListAs
                 public void onResponseReceived(Request request, Response response) {
                     switch (response.getStatusCode()){
                         case Response.SC_OK:
-                            handler.onPreviousDataArrived(processResult(response.getText()), start, length);
+                            List<T> toShow = processResult(response.getText());
+                            addExtraItems(toShow, start, length);
+                            handler.onPreviousDataArrived(toShow, start, length);
                             break;
                         default:
-                            handler.onErrorRetrievingData(response.getStatusText());
+                            handler.onErrorRetrievingData(processError(response));
                     }
                 }
                 @Override
@@ -103,7 +112,7 @@ public abstract class AbstractListAsyncDataProvider<T> implements InfiniteListAs
 
     protected void requestItems(int start, int length, RequestCallback callback) throws RequestException {
 
-        String url = URL
+        String url = this.url
                 .replace(START.getUrlValue(), "start=" + start)
                 .replace(ROWS.getUrlValue(), "rows=" + length);
 
@@ -116,4 +125,34 @@ public abstract class AbstractListAsyncDataProvider<T> implements InfiniteListAs
     }
 
     protected abstract List<T> processResult(String body);
+
+    protected String processError(Response response) {
+        return response.getStatusText();
+    }
+
+    public void setExtraItemsToShow(List<T> extraItems) {
+        this.lastItemsToShow = extraItems;
+        this.sizeOfResults = Integer.MAX_VALUE;
+    }
+
+
+    private List<T> addExtraItems(List<T> toShow, int start, int length) {
+        if(lastItemsToShow == null || lastItemsToShow.isEmpty() ) return toShow;
+        if(length != toShow.size() && sizeOfResults == Integer.MAX_VALUE) {
+            sizeOfResults = start + toShow.size();
+        }
+
+        if( (start + length) > sizeOfResults) {
+            int copyFrom = start + toShow.size() - sizeOfResults < 0 ? 0 : start + toShow.size() - sizeOfResults;
+            int newLength = Math.min(length - toShow.size(), lastItemsToShow.size());
+            int eIndex = copyFrom + newLength >= lastItemsToShow.size() ? lastItemsToShow.size() : copyFrom + newLength;
+
+            for (int i = copyFrom; i < eIndex; i++) {
+                toShow.add(lastItemsToShow.get(i));
+            }
+        }
+
+        return toShow;
+    }
+
 }

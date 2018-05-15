@@ -30,7 +30,11 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
     public static final int DEFAULT_DATA_INCREMENT = DEFAULT_PAGE_SIZE / 2;
     public static final int DEFAULT_ITEM_HEIGHT = 45;
 
-    public static String LOADING = "Loading...";
+    private static final String DEFAULT_LOADING = "Loading...";
+    private static final String DEFAULT_NO_RESULTS = "No results found";
+
+//    private String loadingMessage = DEFAULT_LOADING;
+//    private String noResultsMessage = DEFAULT_NO_RESULTS;
 
     private static final boolean isFirefox = isFirefox();
 
@@ -58,6 +62,8 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
 
     private SimplePanel loadingPanel;
 
+    private SimplePanel noResultsPanel;
+
     private SimplePanel errorPanel;
     private Label errorLabel;
 
@@ -66,9 +72,13 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
     private HandlerRegistration handlerRegistration;
 
     public InfiniteScrollList(final Cell<T> cell, ProvidesKey<T> keyProvider, InfiniteListAsyncDataProvider<T> dataProvider) {
+        this(cell, keyProvider, dataProvider, null);
+    }
+
+    public InfiniteScrollList(final Cell<T> cell, ProvidesKey<T> keyProvider, InfiniteListAsyncDataProvider<T> dataProvider, CellList.Resources resources) {
         setStyleName(RESOURCES.getCSS().scrollable());
 
-        display = new CellList<>(cell, keyProvider);
+        display = resources == null ? new CellList<>(cell, keyProvider) : new CellList<>(cell, resources, keyProvider);
         display.setPageSize(pageSize);
         display.setKeyboardPagingPolicy(HasKeyboardPagingPolicy.KeyboardPagingPolicy.INCREASE_RANGE);
         display.setKeyboardSelectionPolicy(HasKeyboardSelectionPolicy.KeyboardSelectionPolicy.DISABLED);
@@ -84,13 +94,23 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
         offsetEndPanel.setStyleName(RESOURCES.getCSS().offsetDiv());
 
         loadingPanel = new SimplePanel();
-        loadingPanel.add(new Label(LOADING));
+        loadingPanel.add(new Label(DEFAULT_LOADING));
         loadingPanel.setStyleName(RESOURCES.getCSS().loadingInfo());
 
+        noResultsPanel = new SimplePanel();
+        noResultsPanel.add(new Label(DEFAULT_NO_RESULTS));
+        noResultsPanel.setStyleName(RESOURCES.getCSS().noResults());
+
         errorLabel = new Label();
+        errorLabel.addClickHandler(e -> {
+            enableScrolling();
+            clearError();
+        });
         errorPanel = new SimplePanel();
+        errorPanel.setTitle("Click to retry");
         errorPanel.add(errorLabel);
         errorPanel.setStyleName(RESOURCES.getCSS().errorInfo());
+
 
         FlowPanel container = new FlowPanel();
         container.setStyleName(RESOURCES.getCSS().container());
@@ -105,6 +125,7 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
 
         add(scrollable);
         add(loadingPanel);
+        add(noResultsPanel);
         add(errorPanel);
 
         setWidgetLeftRight(scrollable, 0, Style.Unit.PX, 0, Style.Unit.PX);
@@ -112,6 +133,9 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
 
         setWidgetLeftRight(loadingPanel, 70, Style.Unit.PCT, 0, Style.Unit.PX);
         setWidgetTopHeight(loadingPanel, -11, Style.Unit.PX, 10, Style.Unit.PX);
+
+        setWidgetLeftRight(noResultsPanel, 0, Style.Unit.PCT, 0, Style.Unit.PX);
+        setWidgetTopHeight(noResultsPanel, -31, Style.Unit.PX, 30, Style.Unit.PX);
 
         setWidgetLeftRight(errorPanel, 10, Style.Unit.PCT, 10, Style.Unit.PCT);
         setWidgetTopHeight(errorPanel, -11, Style.Unit.PX, 10, Style.Unit.PX);
@@ -152,6 +176,7 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
 
     @Override
     public void onNewDataLoaded() {
+        showEmptyListMessage();
         display.setVisibleRange(0, listManager.getCurrentRows());
         updateOffsetPanelHeights();
 
@@ -163,6 +188,7 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
 
     @Override
     public void onPreviousDataLoaded() {
+        showEmptyListMessage();
         updateOffsetPanelHeights();
 
         if (isFirefox) { scrollable.setVerticalScrollPosition(lastScrollPos);}
@@ -173,6 +199,7 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
 
     @Override
     public void onNextDataLoaded() {
+        showEmptyListMessage();
         updateOffsetPanelHeights();
 
         if (isFirefox) { scrollable.setVerticalScrollPosition(lastScrollPos);}
@@ -180,6 +207,14 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
 
         adjustVerticalPosition();
     }
+
+//    public void setLoadingMessage(String msg) {
+//        this.loadingMessage = msg;
+//    }
+//
+//    public void setNoResultsMessage(String msg) {
+//        this.noResultsMessage = msg;
+//    }
 
     public void setPageSize(int newPageSize) {
         this.pageSize = newPageSize;
@@ -219,6 +254,7 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
     public void onLoading(boolean isLoading) {
         if (isLoading) {
             disableScrolling();
+            clearEmptyListMessage();
             clearError();
             setWidgetTopHeight(loadingPanel, 1, Style.Unit.PX, 10, Style.Unit.PX);
         } else {
@@ -237,7 +273,7 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
         if (isLoading) {
             onLoading(false);
         }
-
+        disableScrolling();
         errorLabel.setText(msg);
         setWidgetTopHeight(errorPanel, 1, Style.Unit.PX, 10, Style.Unit.PX);
     }
@@ -245,6 +281,19 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
     private void clearError() {
         setWidgetTopHeight(errorPanel, -11, Style.Unit.PX, 10, Style.Unit.PX);
         errorLabel.setText("");
+    }
+
+    private void showEmptyListMessage() {
+        if(listManager.getTotalRows() == 0) {
+            disableScrolling();
+            setWidgetTopHeight(noResultsPanel, 1, Style.Unit.PX, 30, Style.Unit.PX);
+        } else {
+            clearEmptyListMessage();
+        }
+    }
+
+    private void clearEmptyListMessage() {
+        setWidgetTopHeight(noResultsPanel, -31, Style.Unit.PX, 30, Style.Unit.PX);
     }
 
     private void enableScrolling() {
@@ -301,6 +350,8 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
         String offsetDiv();
 
         String loadingInfo();
+
+        String noResults();
 
         String errorInfo();
     }

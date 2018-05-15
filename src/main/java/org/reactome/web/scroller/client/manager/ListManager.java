@@ -2,7 +2,6 @@ package org.reactome.web.scroller.client.manager;
 
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
-import org.reactome.web.scroller.client.InfiniteScrollList;
 import org.reactome.web.scroller.client.provider.InfiniteListAsyncDataProvider;
 
 import java.util.List;
@@ -63,7 +62,6 @@ public class ListManager<T> implements AsyncListManager<T> {
     public void loadNewData(int start, int length) {
         if (reachedEndOfResults) return;
         handler.onLoading(true);
-        InfiniteScrollList._log("Requesting New Data " + "[ " + start + ", " + length + " ] .... ");
         dataProvider.requestNewItems(start, length);
     }
 
@@ -86,22 +84,13 @@ public class ListManager<T> implements AsyncListManager<T> {
             updateHeadAndTailOfBuffer(newStart, newLength, newItems);
         }
 
-//        InfiniteScrollList._log("New data Arrived: " + "[ " + curStartIndex + " " + curEndIndex + " ] - " + newItems.size() + "b:" + buffer.getList().size());
         handler.onLoading(false);
         handler.onNewDataLoaded();
     }
 
     public void loadPreviousData() {
-//        ShowMorePagerPanel._log(" << PreviousPage" );
-//        int start = Math.max(curStartIndex - (pageSize/2), 0); //15
-//        int length = Math.min(pageSize, totalRows);
-//        if(start < curStartIndex) {
-//            List<T> newItems = dataProvider.requestItems(start, length);
-//            updateEntireBuffer(start, length, newItems);
-//        }
         int start = Math.max(curStartIndex - (pageSize/2), 0); //15
         int length = Math.min(pageSize, totalRows);
-        InfiniteScrollList._log("loading Previous Data " + "[ " + start + ", " + length + " ] .... ");
         if(start < curStartIndex) {
             handler.onLoading(true);
             dataProvider.requestPreviousItems(start, length);
@@ -110,7 +99,6 @@ public class ListManager<T> implements AsyncListManager<T> {
 
     @Override
     public void onPreviousDataArrived(List<T> newItems, int start, int length) {
-        InfiniteScrollList._log("Previous DONE: " + "[ " + newItems.size() + " ]");
         updateEntireBuffer(start, length, newItems);
 
         handler.onLoading(false);
@@ -118,22 +106,15 @@ public class ListManager<T> implements AsyncListManager<T> {
     }
 
     public void loadNextData() {
-//        ShowMorePagerPanel._log(" >> NextPage" );
-//        int start = curEndIndex - (pageSize/3); //10
-//        int length = Math.min(pageSize, (pageSize/3) + totalRows - curEndIndex);
-//
-//        List<T> newItems = dataProvider.requestItems(start, length);
-//        updateEntireBuffer(start, length, newItems);
         int start = curEndIndex - (pageSize/3); //10
         int length = Math.min(pageSize, (pageSize/3) + totalRows - curEndIndex);
-        InfiniteScrollList._log("loading Next Data " + "[ " + start + ", " + length + " ] .... ");
+
         handler.onLoading(true);
         dataProvider.requestNextItems(start, length);
     }
 
     @Override
     public void onNextDataArrived(List<T> newItems, int start, int length) {
-        InfiniteScrollList._log("Next DONE: " + "[ " + newItems.size() + " ]");
         updateEntireBuffer(start, length, newItems);
 
         handler.onLoading(false);
