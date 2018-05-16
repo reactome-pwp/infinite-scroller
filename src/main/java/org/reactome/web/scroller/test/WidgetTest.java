@@ -59,6 +59,7 @@ public class WidgetTest implements EntryPoint {
 
         // Create a CellList.
         ContactCell contactCell = new ContactCell();
+
         AsyncContactProvider dataProvider = new AsyncContactProvider();
 //        dataProvider.setURL("/ContentService/search/fireworks?query=pten&species=Homo%20sapiens" + "&" + START.getUrlValue() + "&" + ROWS.getUrlValue());
 

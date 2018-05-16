@@ -124,6 +124,13 @@ public abstract class AbstractListAsyncDataProvider<T> implements InfiniteListAs
         request = requestBuilder.sendRequest(null, callback);
     }
 
+    /***
+     * This method should include the logic of instantiating the
+     * objects (to be viewed) from the response body.
+     *
+     * @param body the body of the response
+     * @return the list of objects to be shown by the list
+     */
     protected abstract List<T> processResult(String body);
 
     protected String processError(Response response) {
