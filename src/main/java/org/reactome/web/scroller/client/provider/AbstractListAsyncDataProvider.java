@@ -43,7 +43,7 @@ public abstract class AbstractListAsyncDataProvider<T> implements InfiniteListAs
                             handler.onNewDataArrived(toShow, start, length);
                             break;
                         default:
-                            handler.onErrorRetrievingData(response.getStatusText());
+                            handler.onErrorRetrievingData(response.getStatusCode(), processError(response));
                     }
                 }
 
@@ -70,7 +70,7 @@ public abstract class AbstractListAsyncDataProvider<T> implements InfiniteListAs
                             handler.onNextDataArrived(toShow, start, length);
                             break;
                         default:
-                            handler.onErrorRetrievingData(response.getStatusText());
+                            handler.onErrorRetrievingData(response.getStatusCode(), processError(response));
                     }
                 }
 
@@ -97,7 +97,7 @@ public abstract class AbstractListAsyncDataProvider<T> implements InfiniteListAs
                             handler.onPreviousDataArrived(toShow, start, length);
                             break;
                         default:
-                            handler.onErrorRetrievingData(processError(response));
+                            handler.onErrorRetrievingData(response.getStatusCode(), processError(response));
                     }
                 }
                 @Override

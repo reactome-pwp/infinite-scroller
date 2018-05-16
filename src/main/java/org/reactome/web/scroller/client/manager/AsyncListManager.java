@@ -13,5 +13,7 @@ public interface AsyncListManager<T> {
 
     void onNextDataArrived(List<T> newItems, int start, int length);
 
+    void onErrorRetrievingData(int code, String errorMsg);
+
     void onErrorRetrievingData(String errorMsg);
 }

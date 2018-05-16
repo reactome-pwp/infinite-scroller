@@ -1,5 +1,6 @@
 package org.reactome.web.scroller.client.manager;
 
+import com.google.gwt.http.client.Response;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 import org.reactome.web.scroller.client.provider.InfiniteListAsyncDataProvider;
@@ -7,6 +8,8 @@ import org.reactome.web.scroller.client.provider.InfiniteListAsyncDataProvider;
 import java.util.List;
 
 /**
+ * This class maintains a list of all the items present in the InfiniteScrollList.
+ *
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
 public class ListManager<T> implements AsyncListManager<T> {
@@ -28,6 +31,7 @@ public class ListManager<T> implements AsyncListManager<T> {
         void onNextDataLoaded();
         void onLoading(boolean isLoading);
         void onError(String msg);
+        void onNoResultsFound(String msg);
     }
 
     private Handler handler;
@@ -122,7 +126,20 @@ public class ListManager<T> implements AsyncListManager<T> {
     }
 
     @Override
+    public void onErrorRetrievingData(int code, String errorMsg) {
+//        InfiniteScrollList._log("onErrorRetrievingData: " + code + " - " + errorMsg);
+        switch (code) {
+            case Response.SC_NOT_FOUND:
+                handler.onNoResultsFound(errorMsg);
+                break;
+            default:
+                handler.onError(errorMsg);
+        }
+    }
+
+    @Override
     public void onErrorRetrievingData(String errorMsg) {
+//        InfiniteScrollList._log("onErrorRetrievingData: " + errorMsg);
         handler.onError(errorMsg);
     }
 

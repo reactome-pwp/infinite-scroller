@@ -1,5 +1,6 @@
 package org.reactome.web.scroller.test;
 
+import com.google.gwt.http.client.Response;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -18,6 +19,11 @@ public class AsyncContactProvider extends AbstractListAsyncDataProvider<ContactI
     @Override
     protected List<ContactInfo> processResult(String body) {
         return getResults(toList(body));
+    }
+
+    @Override
+    protected String processError(Response response) {
+        return response.getStatusText() + " (" + response.getStatusCode() + ")";
     }
 
     private List<ContactInfo> getResults(List<String> stringList) {
@@ -39,9 +45,6 @@ public class AsyncContactProvider extends AbstractListAsyncDataProvider<ContactI
         JSONArray jsonArray = e.get("entries").isArray();
 
         for (int i = 0; i < jsonArray.size(); i++) {
-//            JSONValue jsonValue = jsonArray.get(i);
-//            JSONString jsonString = jsonValue.isString();
-//            String stringValue = (jsonString == null) ? jsonValue.toString() : jsonString.stringValue();
             rtn.add(jsonArray.get(i).isObject().get("stId").isString().stringValue());
         }
 
