@@ -3,6 +3,7 @@ package org.reactome.web.scroller.client.provider;
 import com.google.gwt.http.client.*;
 import org.reactome.web.scroller.client.manager.AsyncListManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.reactome.web.scroller.client.util.Placeholder.ROWS;
@@ -43,7 +44,13 @@ public abstract class AbstractListAsyncDataProvider<T> implements InfiniteListAs
                             handler.onNewDataArrived(toShow, start, length);
                             break;
                         default:
-                            handler.onErrorRetrievingData(response.getStatusCode(), processError(response));
+                            if(lastItemsToShow!=null && !lastItemsToShow.isEmpty()) {
+                                List<T> extra = new ArrayList<>();
+                                addExtraItems(extra, start, length);
+                                handler.onNewDataArrived(extra, start, length);
+                            } else {
+                                handler.onErrorRetrievingData(response.getStatusCode(), processError(response));
+                            }
                     }
                 }
 
@@ -70,7 +77,13 @@ public abstract class AbstractListAsyncDataProvider<T> implements InfiniteListAs
                             handler.onNextDataArrived(toShow, start, length);
                             break;
                         default:
-                            handler.onErrorRetrievingData(response.getStatusCode(), processError(response));
+                            if(lastItemsToShow!=null && !lastItemsToShow.isEmpty()) {
+                                List<T> extra = new ArrayList<>();
+                                addExtraItems(extra, start, length);
+                                handler.onNextDataArrived(extra, start, length);
+                            } else {
+                                handler.onErrorRetrievingData(response.getStatusCode(), processError(response));
+                            }
                     }
                 }
 
@@ -97,7 +110,13 @@ public abstract class AbstractListAsyncDataProvider<T> implements InfiniteListAs
                             handler.onPreviousDataArrived(toShow, start, length);
                             break;
                         default:
-                            handler.onErrorRetrievingData(response.getStatusCode(), processError(response));
+                            if(lastItemsToShow!=null && !lastItemsToShow.isEmpty()) {
+                                List<T> extra = new ArrayList<>();
+                                addExtraItems(extra, start, length);
+                                handler.onPreviousDataArrived(extra, start, length);
+                            } else {
+                                handler.onErrorRetrievingData(response.getStatusCode(), processError(response));
+                            }
                     }
                 }
                 @Override
