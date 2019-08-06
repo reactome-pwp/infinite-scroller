@@ -8,9 +8,9 @@
         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
         <!-- Default page to serve -->
-<welcome-file-list>
-  <welcome-file>index.html</welcome-file>
-</welcome-file-list>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
 
 
   <!-- Reactome Content Service (ONLY USED IN DEV MODE) -->
@@ -21,8 +21,8 @@
       <param-name>proxyHost</param-name>
       <!--<param-value>localhost</param-value>-->
       <!--<param-value>reactome.org</param-value>-->
-      <param-value>reactomedev.oicr.on.ca</param-value>
-      <!--<param-value>reactomerelease.oicr.on.ca</param-value>-->
+      <param-value>dev.reactome.org</param-value>
+      <!--<param-value>release.reactome.org</param-value>-->
     </init-param>
     <init-param>
       <param-name>proxyPort</param-name>

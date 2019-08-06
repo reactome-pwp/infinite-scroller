@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module rename-to='widgettest'>
     <inherits name='com.google.gwt.user.User'/>
-
+    <!--<inherits name="elemental2.dom.Dom"/>-->
+    <!--<inherits name="elemental2.core.Core"/>-->
     <inherits name="org.reactome.web.scroller.Scroller" />
 
     <!-- Specify the app entry point class.                         -->

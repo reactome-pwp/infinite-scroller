@@ -49,7 +49,7 @@ Then add the scroller dependency
         <artifactId>scroller</artifactId>
         <version>1.0.2</version>
     </dependency>
-<dependencies>
+</dependencies>
 ```
 
 Finally you need to inherit the module in your ```.gwt.xml``` file

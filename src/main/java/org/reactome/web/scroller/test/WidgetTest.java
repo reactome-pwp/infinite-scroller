@@ -14,9 +14,8 @@ import java.util.List;
 import static org.reactome.web.scroller.client.util.Placeholder.ROWS;
 import static org.reactome.web.scroller.client.util.Placeholder.START;
 
-
-
 /**
+ * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class WidgetTest implements EntryPoint {
@@ -56,6 +55,14 @@ public class WidgetTest implements EntryPoint {
 
     @Override
     public void onModuleLoad() {
+        List<ContactInfo> extraList = Arrays.asList(
+                new ContactInfo("Extra 1",  "Extra 1"),
+                new ContactInfo("Extra 2",  "Extra 2"),
+                new ContactInfo("Extra 3",  "Extra 3"),
+                new ContactInfo("Extra 4",  "Extra 4"),
+                new ContactInfo("Extra 5",  "Extra 5")
+        );
+
 
         // Create a CellList.
         ContactCell contactCell = new ContactCell();
@@ -76,38 +83,9 @@ public class WidgetTest implements EntryPoint {
 
         RootLayoutPanel.get().add(container);
 
-        List<ContactInfo> extraList = Arrays.asList(
-                new ContactInfo("Extra 1",  "Extra 1"),
-                new ContactInfo("Extra 2",  "Extra 2"),
-                new ContactInfo("Extra 3",  "Extra 3"),
-                new ContactInfo("Extra 4",  "Extra 4"),
-                new ContactInfo("Extra 5",  "Extra 5")
-        );
-
-//        dataProvider.setURL("/ContentService/search/diagram/R-HSA-8848021?query=Q96CP2" + "&" + START.getUrlValue() + "&" + ROWS.getUrlValue());
         dataProvider.setURL("/ContentService/search/fireworks?query=PTEN" + "&" + START.getUrlValue() + "&" + ROWS.getUrlValue());
-//        dataProvider.setExtraItemsToShow(extraList);
+        dataProvider.setExtraItemsToShow(extraList);
         myList.setPageSize(30);
         myList.loadFirstPage();
-
-
-//        Scheduler.get().scheduleFixedDelay(() -> {
-//            dataProvider.setURL("/ContentService/search/diagram/R-HSA-8848021?query=lalalal" + "&" + START.getUrlValue() + "&" + ROWS.getUrlValue());
-//            dataProvider.setExtraItemsToShow(null);
-//            myList.setPageSize(30);
-//            myList.loadFirstPage();
-//            return false;
-//        }, 2000);
-//
-//
-//        Scheduler.get().scheduleFixedDelay(() -> {
-////            dataProvider.setURL("/ContentService/search/fireworks?query=brca&species=Homo%20sapiens" + "&" + START.getUrlValue() + "&" + ROWS.getUrlValue());
-//            dataProvider.setURL("/ContentService/search/diagram/R-HSA-8848021?query=met" + "&" + START.getUrlValue() + "&" + ROWS.getUrlValue());
-//            dataProvider.setExtraItemsToShow(extraList);
-//            myList.setPageSize(30);
-//            myList.loadFirstPage();
-//            return false;
-//        }, 6000);
-
     }
 }
