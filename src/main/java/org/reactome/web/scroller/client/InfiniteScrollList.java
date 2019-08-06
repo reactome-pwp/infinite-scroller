@@ -13,6 +13,7 @@ import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.SelectionModel;
+import com.google.gwt.view.client.SingleSelectionModel;
 import org.reactome.web.scroller.client.manager.ListManager;
 import org.reactome.web.scroller.client.provider.InfiniteListAsyncDataProvider;
 
@@ -263,6 +264,7 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
     @Override
     public void onNoResultsFound(String msg) {
         showEmptyListMessage(msg);
+        clearAnySelection();
     }
 
     private void showError(String msg) {
@@ -289,6 +291,13 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
         disableScrolling();
         noResultsLabel.setHTML(msg == null || msg.isEmpty() ? DEFAULT_NO_RESULTS : msg);
         setWidgetTopHeight(noResultsPanel, 1, Style.Unit.PX, 50, Style.Unit.PX);
+    }
+
+    private void clearAnySelection() {
+        SelectionModel selectionModel = getDisplay().getSelectionModel();
+        if(selectionModel instanceof SingleSelectionModel) {
+            ((SingleSelectionModel) selectionModel).clear();
+        }
     }
 
     private void clearEmptyListMessage() {
