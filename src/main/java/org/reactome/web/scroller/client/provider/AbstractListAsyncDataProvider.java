@@ -44,7 +44,7 @@ public abstract class AbstractListAsyncDataProvider<T> implements InfiniteListAs
                             handler.onNewDataArrived(toShow, start, length);
                             break;
                         default:
-                            if(lastItemsToShow!=null && !lastItemsToShow.isEmpty()) {
+                            if (lastItemsToShow != null && !lastItemsToShow.isEmpty()) {
                                 List<T> extra = new ArrayList<>();
                                 addExtraItems(extra, start, length);
                                 handler.onNewDataArrived(extra, start, length);
@@ -77,7 +77,7 @@ public abstract class AbstractListAsyncDataProvider<T> implements InfiniteListAs
                             handler.onNextDataArrived(toShow, start, length);
                             break;
                         default:
-                            if(lastItemsToShow!=null && !lastItemsToShow.isEmpty()) {
+                            if (lastItemsToShow != null && !lastItemsToShow.isEmpty()) {
                                 List<T> extra = new ArrayList<>();
                                 addExtraItems(extra, start, length);
                                 handler.onNextDataArrived(extra, start, length);
@@ -103,14 +103,14 @@ public abstract class AbstractListAsyncDataProvider<T> implements InfiniteListAs
             requestItems(start, length, new RequestCallback() {
                 @Override
                 public void onResponseReceived(Request request, Response response) {
-                    switch (response.getStatusCode()){
+                    switch (response.getStatusCode()) {
                         case Response.SC_OK:
                             List<T> toShow = processResult(response.getText());
                             addExtraItems(toShow, start, length);
                             handler.onPreviousDataArrived(toShow, start, length);
                             break;
                         default:
-                            if(lastItemsToShow!=null && !lastItemsToShow.isEmpty()) {
+                            if (lastItemsToShow != null && !lastItemsToShow.isEmpty()) {
                                 List<T> extra = new ArrayList<>();
                                 addExtraItems(extra, start, length);
                                 handler.onPreviousDataArrived(extra, start, length);
@@ -119,6 +119,7 @@ public abstract class AbstractListAsyncDataProvider<T> implements InfiniteListAs
                             }
                     }
                 }
+
                 @Override
                 public void onError(Request request, Throwable exception) {
                     handler.onErrorRetrievingData(exception.getMessage());
@@ -163,12 +164,12 @@ public abstract class AbstractListAsyncDataProvider<T> implements InfiniteListAs
 
 
     private List<T> addExtraItems(List<T> toShow, int start, int length) {
-        if(lastItemsToShow == null || lastItemsToShow.isEmpty() ) return toShow;
-        if(length != toShow.size() && sizeOfResults == Integer.MAX_VALUE) {
+        if (lastItemsToShow == null || lastItemsToShow.isEmpty()) return toShow;
+        if (length != toShow.size() && sizeOfResults == Integer.MAX_VALUE) {
             sizeOfResults = start + toShow.size();
         }
 
-        if( (start + length) > sizeOfResults) {
+        if ((start + length) > sizeOfResults) {
             int copyFrom = start + toShow.size() - sizeOfResults < 0 ? 0 : start + toShow.size() - sizeOfResults;
             int newLength = Math.min(length - toShow.size(), lastItemsToShow.size());
             int eIndex = copyFrom + newLength >= lastItemsToShow.size() ? lastItemsToShow.size() : copyFrom + newLength;

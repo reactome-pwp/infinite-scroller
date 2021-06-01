@@ -25,7 +25,7 @@ import org.reactome.web.scroller.client.provider.InfiniteListAsyncDataProvider;
  *
  * @author Kostas Sidiropoulos <ksidiro@ebi.ac.uk>
  */
-public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Handler{
+public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Handler {
 
     public static final int DEFAULT_PAGE_SIZE = 20;
     public static final int DEFAULT_DATA_INCREMENT = DEFAULT_PAGE_SIZE / 2;
@@ -42,33 +42,33 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
     private int curEndIndex = 0;
 
     private int pageSize = DEFAULT_PAGE_SIZE;
-    private int dataIncrement = DEFAULT_DATA_INCREMENT;
+    private final int dataIncrement = DEFAULT_DATA_INCREMENT;
 
     private int listWindowHeight = 0;
-    private int rowSize = DEFAULT_ITEM_HEIGHT;
+    private final int rowSize = DEFAULT_ITEM_HEIGHT;
 
-    private ListManager<T> listManager;
-    private CellList<T> display;
+    private final ListManager<T> listManager;
+    private final CellList<T> display;
 
     private final ScrollPanel scrollable = new ScrollPanel();
 
     // Used at the beginning of the list to artificially increase the size of the scrollpanel
-    private SimplePanel offsetStartPanel;
+    private final SimplePanel offsetStartPanel;
 
     // Used at the end of the list to artificially increase the size of the scrollpanel
-    private SimplePanel offsetEndPanel;
+    private final SimplePanel offsetEndPanel;
 
-    private SimplePanel loadingPanel;
+    private final SimplePanel loadingPanel;
 
-    private SimplePanel noResultsPanel;
-    private HTML noResultsLabel;
+    private final SimplePanel noResultsPanel;
+    private final HTML noResultsLabel;
 
-    private SimplePanel errorPanel;
-    private Label errorLabel;
+    private final SimplePanel errorPanel;
+    private final Label errorLabel;
 
     private boolean isLoading;
 
-    private HandlerRegistration handlerRegistration;
+    private final HandlerRegistration handlerRegistration;
 
     public InfiniteScrollList(final Cell<T> cell, ProvidesKey<T> keyProvider, InfiniteListAsyncDataProvider<T> dataProvider) {
         this(cell, keyProvider, dataProvider, null);
@@ -152,7 +152,7 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
             curStartIndex = listManager.getCurStartIndex();
             curEndIndex = listManager.getCurEndIndex();
 
-            if (lastScrollPos!=0 && lastScrollPos <= curStartIndex * DEFAULT_ITEM_HEIGHT ) {
+            if (lastScrollPos != 0 && lastScrollPos <= curStartIndex * DEFAULT_ITEM_HEIGHT) {
                 listManager.loadPreviousData();
             } else if (lastScrollPos >= (((curEndIndex) * DEFAULT_ITEM_HEIGHT) - scrollable.getOffsetHeight())) {
                 if (curEndIndex >= listManager.getTotalRows() - 1) {
@@ -180,8 +180,11 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
         display.setVisibleRange(0, listManager.getCurrentRows());
         updateOffsetPanelHeights();
 
-        if (isFirefox) { scrollable.setVerticalScrollPosition(lastScrollPos);}
-        else { scrollable.setVerticalScrollPosition((((curEndIndex) * DEFAULT_ITEM_HEIGHT) - scrollable.getOffsetHeight())); }
+        if (isFirefox) {
+            scrollable.setVerticalScrollPosition(lastScrollPos);
+        } else {
+            scrollable.setVerticalScrollPosition((((curEndIndex) * DEFAULT_ITEM_HEIGHT) - scrollable.getOffsetHeight()));
+        }
 
         adjustVerticalPosition();
     }
@@ -191,8 +194,11 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
         clearEmptyListMessage();
         updateOffsetPanelHeights();
 
-        if (isFirefox) { scrollable.setVerticalScrollPosition(lastScrollPos);}
-        else { scrollable.setVerticalScrollPosition(curStartIndex * DEFAULT_ITEM_HEIGHT); }
+        if (isFirefox) {
+            scrollable.setVerticalScrollPosition(lastScrollPos);
+        } else {
+            scrollable.setVerticalScrollPosition(curStartIndex * DEFAULT_ITEM_HEIGHT);
+        }
 
         adjustVerticalPosition();
     }
@@ -202,8 +208,11 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
         clearEmptyListMessage();
         updateOffsetPanelHeights();
 
-        if (isFirefox) { scrollable.setVerticalScrollPosition(lastScrollPos);}
-        else { scrollable.setVerticalScrollPosition((((curEndIndex) * DEFAULT_ITEM_HEIGHT) - scrollable.getOffsetHeight())); }
+        if (isFirefox) {
+            scrollable.setVerticalScrollPosition(lastScrollPos);
+        } else {
+            scrollable.setVerticalScrollPosition((((curEndIndex) * DEFAULT_ITEM_HEIGHT) - scrollable.getOffsetHeight()));
+        }
 
         adjustVerticalPosition();
     }
@@ -215,8 +224,8 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
         listManager.clear();
         listManager.setPageSize(newPageSize);
 
-        offsetStartPanel.setHeight(listManager.getCurStartIndex()  * DEFAULT_ITEM_HEIGHT + "px");
-        offsetEndPanel.setHeight((listManager.getTotalRows() - (listManager.getCurStartIndex() + listManager.getCurrentRows()))  * DEFAULT_ITEM_HEIGHT + "px");
+        offsetStartPanel.setHeight(listManager.getCurStartIndex() * DEFAULT_ITEM_HEIGHT + "px");
+        offsetEndPanel.setHeight((listManager.getTotalRows() - (listManager.getCurStartIndex() + listManager.getCurrentRows())) * DEFAULT_ITEM_HEIGHT + "px");
 
         scrollable.setVerticalScrollPosition(1);
 
@@ -232,8 +241,8 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
     }
 
     private void updateOffsetPanelHeights() {
-        offsetStartPanel.setHeight(listManager.getCurStartIndex()  * DEFAULT_ITEM_HEIGHT + "px");
-        offsetEndPanel.setHeight((listManager.getTotalRows() - (listManager.getCurStartIndex() + listManager.getCurrentRows()))  * DEFAULT_ITEM_HEIGHT + "px");
+        offsetStartPanel.setHeight(listManager.getCurStartIndex() * DEFAULT_ITEM_HEIGHT + "px");
+        offsetEndPanel.setHeight((listManager.getTotalRows() - (listManager.getCurStartIndex() + listManager.getCurrentRows())) * DEFAULT_ITEM_HEIGHT + "px");
     }
 
     private void adjustVerticalPosition() {
@@ -295,7 +304,7 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
 
     private void clearAnySelection() {
         SelectionModel selectionModel = getDisplay().getSelectionModel();
-        if(selectionModel instanceof SingleSelectionModel) {
+        if (selectionModel instanceof SingleSelectionModel) {
             ((SingleSelectionModel) selectionModel).clear();
         }
     }
@@ -318,13 +327,14 @@ public class InfiniteScrollList<T> extends LayoutPanel implements ListManager.Ha
     }-*/;
 
     public static native void _log(String message)/*-{
-        if($wnd.console){
+        if ($wnd.console) {
             $wnd.console.log(message);
         }
     }-*/;
 
 
     public static Resources RESOURCES;
+
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();

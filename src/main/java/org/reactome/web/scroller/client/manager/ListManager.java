@@ -23,18 +23,23 @@ public class ListManager<T> implements AsyncListManager<T> {
     private InfiniteListAsyncDataProvider<T> dataProvider;
 
     // This is used to keep all list items
-    private ListDataProvider<T> buffer = new ListDataProvider<>();
+    private final ListDataProvider<T> buffer = new ListDataProvider<>();
 
     public interface Handler {
         void onNewDataLoaded();
+
         void onPreviousDataLoaded();
+
         void onNextDataLoaded();
+
         void onLoading(boolean isLoading);
+
         void onError(String msg);
+
         void onNoResultsFound(String msg);
     }
 
-    private Handler handler;
+    private final Handler handler;
 
     public ListManager(Handler handler, InfiniteListAsyncDataProvider<T> dataProvider) {
         this.handler = handler;
@@ -93,9 +98,9 @@ public class ListManager<T> implements AsyncListManager<T> {
     }
 
     public void loadPreviousData() {
-        int start = Math.max(curStartIndex - (pageSize/2), 0); //15
+        int start = Math.max(curStartIndex - (pageSize / 2), 0); //15
         int length = Math.min(pageSize, totalRows);
-        if(start < curStartIndex) {
+        if (start < curStartIndex) {
             handler.onLoading(true);
             dataProvider.requestPreviousItems(start, length);
         }
@@ -110,8 +115,8 @@ public class ListManager<T> implements AsyncListManager<T> {
     }
 
     public void loadNextData() {
-        int start = curEndIndex - (pageSize/3); //10
-        int length = Math.min(pageSize, (pageSize/3) + totalRows - curEndIndex);
+        int start = curEndIndex - (pageSize / 3); //10
+        int length = Math.min(pageSize, (pageSize / 3) + totalRows - curEndIndex);
 
         handler.onLoading(true);
         dataProvider.requestNextItems(start, length);
@@ -165,17 +170,19 @@ public class ListManager<T> implements AsyncListManager<T> {
 
     /**
      * Adds the specified list of items at the tail of the list
+     *
      * @param newItems
      */
-    private void addItemsToTailOfBuffer(List<T> newItems){
+    private void addItemsToTailOfBuffer(List<T> newItems) {
         buffer.getList().addAll(newItems);
     }
 
     /**
      * Removes the specified number of items from the head of the buffer
+     *
      * @param numberOfItemsToRemove
      */
-    private void removeItemsFromHeadOfBuffer(int numberOfItemsToRemove){
+    private void removeItemsFromHeadOfBuffer(int numberOfItemsToRemove) {
         for (int i = 0; i < numberOfItemsToRemove; i++) {
             buffer.getList().remove(0);
         }

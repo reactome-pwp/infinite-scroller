@@ -56,11 +56,11 @@ public class WidgetTest implements EntryPoint {
     @Override
     public void onModuleLoad() {
         List<ContactInfo> extraList = Arrays.asList(
-                new ContactInfo("Extra 1",  "Extra 1"),
-                new ContactInfo("Extra 2",  "Extra 2"),
-                new ContactInfo("Extra 3",  "Extra 3"),
-                new ContactInfo("Extra 4",  "Extra 4"),
-                new ContactInfo("Extra 5",  "Extra 5")
+                new ContactInfo("Extra 1", "Extra 1"),
+                new ContactInfo("Extra 2", "Extra 2"),
+                new ContactInfo("Extra 3", "Extra 3"),
+                new ContactInfo("Extra 4", "Extra 4"),
+                new ContactInfo("Extra 5", "Extra 5")
         );
 
 
@@ -70,7 +70,7 @@ public class WidgetTest implements EntryPoint {
         AsyncContactProvider dataProvider = new AsyncContactProvider();
 //        dataProvider.setURL("/ContentService/search/fireworks?query=pten&species=Homo%20sapiens" + "&" + START.getUrlValue() + "&" + ROWS.getUrlValue());
 
-        InfiniteScrollList<ContactInfo> myList = new InfiniteScrollList(contactCell, ContactInfo.KEY_PROVIDER, dataProvider);
+        InfiniteScrollList<ContactInfo> myList = new InfiniteScrollList<>(contactCell, ContactInfo.KEY_PROVIDER, dataProvider);
 
         myList.setSelectionModel(selectionModel);
         selectionModel.addSelectionChangeHandler(event -> InfiniteScrollList._log("Selection changed to: " + selectionModel.getSelectedObject().getTitle()));

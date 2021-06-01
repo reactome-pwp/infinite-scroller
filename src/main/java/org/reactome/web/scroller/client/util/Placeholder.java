@@ -7,7 +7,7 @@ public enum Placeholder {
     START("##START##"),
     ROWS("##ROWS##");
 
-    private String urlValue;
+    private final String urlValue;
 
     Placeholder(String urlValue) {
         this.urlValue = urlValue;

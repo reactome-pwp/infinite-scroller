@@ -24,8 +24,8 @@ public class ContactInfo implements Comparable<ContactInfo> {
     public static int nextId = 0;
 
     private final int id;
-    private String title;
-    private String message;
+    private final String title;
+    private final String message;
 
     public ContactInfo(String title, String message) {
         this.id = nextId;

@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.reactome.web</groupId>
     <artifactId>scroller</artifactId>
-    <version>1.0.2</version>
+    <version>1.1.0-SNAPSHOT</version>
 
     <name>Scroller</name>
     <packaging>jar</packaging>
@@ -38,16 +38,20 @@
 
     <properties>
         <!-- Convenience property to set the GWT version -->
-        <gwtVersion>2.8.2</gwtVersion>
+        <gwtVersion>2.9.0</gwtVersion>
         <gwtStyle>OBF</gwtStyle> <!-- OBF | PRETTY | DETAILED -->
+        <jetty.runner.version>9.4.41.v20210516</jetty.runner.version>
 
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <reactome.utils.version>1.0.3</reactome.utils.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <reactome.utils.version>1.1.0-SNAPSHOT</reactome.utils.version>
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
 
         <appModule>org.reactome.web.scroller.Scroller</appModule>
         <appName>${appModule}</appName>
+        <slf4j.version>1.7.22</slf4j.version>
+        <junit.version>5.8.0-M1</junit.version>
+        <elemental2.version>1.1.0</elemental2.version>
     </properties>
 
     <dependencyManagement>
@@ -78,11 +82,45 @@
             <artifactId>gwt-user</artifactId>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-codeserver</artifactId>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-webapp</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-servlets</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-annotations</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>apache-jsp</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.jetty.websocket</groupId>
+                    <artifactId>websocket-client</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>apache-jsp</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-runner</artifactId>
+            <version>${jetty.runner.version}</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-servlet</artifactId>
@@ -91,19 +129,19 @@
         <dependency>
             <groupId>com.google.elemental2</groupId>
             <artifactId>elemental2-core</artifactId>
-            <version>1.0.0-RC1</version>
+            <version>${elemental2.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.elemental2</groupId>
             <artifactId>elemental2-dom</artifactId>
-            <version>1.0.0-RC1</version>
+            <version>${elemental2.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -111,12 +149,12 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.22</version>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-nop</artifactId>
-            <version>1.7.22</version>
+            <version>${slf4j.version}</version>
         </dependency>
 
         <dependency>

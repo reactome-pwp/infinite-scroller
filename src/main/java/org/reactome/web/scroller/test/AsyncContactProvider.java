@@ -29,7 +29,7 @@ public class AsyncContactProvider extends AbstractListAsyncDataProvider<ContactI
     private List<ContactInfo> getResults(List<String> stringList) {
         List<ContactInfo> rtn = new ArrayList<>();
 
-        for (String result: stringList) {
+        for (String result : stringList) {
             rtn.add(new ContactInfo(result, " - "));
         }
         return rtn;
@@ -37,7 +37,7 @@ public class AsyncContactProvider extends AbstractListAsyncDataProvider<ContactI
 
     private List<String> toList(String jsonStr) {
         List<String> rtn = new ArrayList<>();
-        if (jsonStr == null || jsonStr.isEmpty() ) return rtn;
+        if (jsonStr == null || jsonStr.isEmpty()) return rtn;
 
         JSONValue parsed = JSONParser.parseStrict(jsonStr);
         JSONObject e = parsed.isObject();
