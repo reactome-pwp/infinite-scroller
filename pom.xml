@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.reactome.web</groupId>
     <artifactId>scroller</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
 
     <name>Scroller</name>
     <packaging>jar</packaging>
@@ -44,7 +44,7 @@
 
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <reactome.utils.version>1.1.0-SNAPSHOT</reactome.utils.version>
+        <reactome.utils.version>1.1.0</reactome.utils.version>
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
 
         <appModule>org.reactome.web.scroller.Scroller</appModule>
@@ -284,7 +284,7 @@
         <repository>
             <id>nexus-ebi-repo</id>
             <name>The EBI internal repository</name>
-            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
+            <url>https://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -296,7 +296,7 @@
         <repository>
             <id>nexus-ebi-snapshot-repo</id>
             <name>The EBI internal snapshot repository</name>
-            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-snapshots/</url>
+            <url>https://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-snapshots/</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -311,14 +311,14 @@
         <repository>
             <id>pst-release</id>
             <name>EBI Nexus Repository</name>
-            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-release</url>
+            <url>https://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-release</url>
         </repository>
         <!-- EBI SNAPSHOT repo -->
         <snapshotRepository>
             <uniqueVersion>false</uniqueVersion>
             <id>pst-snapshots</id>
             <name>EBI Nexus Snapshots Repository</name>
-            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-snapshots</url>
+            <url>https://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -326,7 +326,7 @@
         <pluginRepository>
             <id>central</id>
             <name>Central Repository</name>
-            <url>http://repo.maven.apache.org/maven2</url>
+            <url>https://repo.maven.apache.org/maven2</url>
             <layout>default</layout>
             <snapshots>
                 <enabled>false</enabled>
